@@ -519,6 +519,98 @@ body{background:var(--bg);-webkit-tap-highlight-color:transparent}
 }
 @media(orientation:landscape) and (max-height:600px) and (max-width:1100px) and (prefers-reduced-motion:reduce){.rotate-icon{animation:none}}
 </style>
+
+<style>
+/* ===== v2: ظاهر تلگرامی‌تر + انیمیشن‌های نرم ===== */
+.ms{--tgr:cubic-bezier(.2,.9,.25,1);--tgsp:cubic-bezier(.34,1.45,.5,1);--tgtail:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 14'%3E%3Cpath d='M0 0V14H9C4.5 13.5 1 10.5 0 5Z'/%3E%3C/svg%3E")}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .ms{--tgo:#1d6b49;--tgot:#fff;--tgmt:#a6e0c6}}
+:root[data-theme=dark] .ms{--tgo:#1d6b49;--tgot:#fff;--tgmt:#a6e0c6}
+@keyframes tgIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes tgPopIn{from{opacity:0;transform:translateY(14px) scale(.7)}to{opacity:1;transform:none}}
+@keyframes tgUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes tgDown{to{transform:translateY(100%)}}
+@keyframes tgScrim{to{background:#0006}}
+@keyframes tgScrimO{from{background:#0006}to{background:#0000}}
+@keyframes tgRp{to{transform:scale(1);opacity:0}}
+@keyframes tgRingIn{from{transform:scale(.7);opacity:.4}to{transform:none;opacity:1}}
+@keyframes tgZoom{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes tgPulse{0%{box-shadow:0 0 0 0 #e11d4866}100%{box-shadow:0 0 0 18px #e11d4800}}
+
+/* باز شدن گفتگو و پنل‌ها */
+.ms .fxc{animation:tgIn .34s var(--tgr) both}
+.ms .m_pf{animation:tgIn .3s var(--tgr)}
+.ms .m_mv{animation:tgZoom .26s var(--tgr)}
+
+/* دم حباب‌ها (فقط آخرین پیام هر ردیف) */
+.ms .m_bb{position:relative}
+.ms .m_b.o:not(:has(+ .m_b.o)):not(.mo):not(:has(.m_rv)) .m_bb{border-bottom-right-radius:0}
+.ms .m_b.i:not(:has(+ .m_b.i)):not(.mo):not(:has(.m_rv)) .m_bb{border-bottom-left-radius:0}
+.ms .m_b.o:not(:has(+ .m_b.o)):not(.mo):not(:has(.m_rv)) .m_bb::after,.ms .m_b.i:not(:has(+ .m_b.i)):not(.mo):not(:has(.m_rv)) .m_bb::after{content:"";position:absolute;bottom:0;width:9px;height:14px;-webkit-mask:var(--tgtail) center/100% 100% no-repeat;mask:var(--tgtail) center/100% 100% no-repeat;pointer-events:none}
+.ms .m_b.o:not(:has(+ .m_b.o)):not(.mo):not(:has(.m_rv)) .m_bb::after{right:-8px;background:var(--tgo)}
+.ms .m_b.i:not(:has(+ .m_b.i)):not(.mo):not(:has(.m_rv)) .m_bb::after{left:-8px;background:var(--tgi);transform:scaleX(-1)}
+
+/* نوار پیام شناور روی پس‌زمینه، مثل تلگرام */
+.ms .m_cp{background:transparent;border:0;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+html.kb-open .ms .m_cp{padding-bottom:8px}
+.ms .m_cr{background:transparent;padding:0;gap:8px;align-items:flex-end}
+.ms .m_ti{background:var(--cd);box-shadow:0 1px 3px #0003;border-radius:23px;padding:2px 6px}
+.ms .m_cr>.m_pw>button{background:var(--cd);box-shadow:0 1px 3px #0003;color:var(--mu)}
+.ms .m_rp,.ms .m_vre,.ms .m_ma{background:var(--cd);border-radius:14px;padding:6px 10px;box-shadow:0 1px 3px #0002;margin-bottom:6px;animation:msFade .22s var(--tgr)}
+.ms .m_f{background:var(--cd);border:0;border-radius:14px;padding:6px 8px;box-shadow:0 1px 3px #0002;animation:tgPopIn .26s var(--tgsp)}
+.ms .m_f img,.ms .m_f video{width:52px;height:52px;border-radius:10px}
+.ms .m_act.rc{animation:tgPulse 1.3s ease-out infinite}
+
+/* شیت پیوست (گالری، دوربین، ویدیو، فایل) */
+.tg_sh{position:fixed;inset:0;z-index:2147480000;display:flex;align-items:flex-end;justify-content:center;background:#0000;animation:tgScrim .22s ease forwards;direction:rtl}
+.tg_sh.out{animation:tgScrimO .2s ease forwards}
+.tg_sc{width:min(100%,520px);background:var(--cd);color:var(--tx);border-radius:20px 20px 0 0;padding:8px 14px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 30px #0003;animation:tgUp .34s var(--tgr) both}
+.tg_sh.out .tg_sc{animation:tgDown .2s ease-in forwards}
+.tg_hd{display:block;width:38px;height:4px;border-radius:2px;background:var(--bd);margin:4px auto 16px}
+.tg_gr{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ms .tg_b{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:none;padding:8px 2px;border-radius:14px;color:var(--tx);animation:tgPopIn .36s var(--tgsp) both}
+.ms .tg_b:nth-child(2){animation-delay:.04s}.ms .tg_b:nth-child(3){animation-delay:.08s}.ms .tg_b:nth-child(4){animation-delay:.12s}
+.tg_i{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 3px 10px #0003}
+.ms .tg_i svg.i{width:26px;height:26px;stroke:#fff}
+.tg_b b{font-weight:500;font-size:.85em}
+.tg_b.g1 .tg_i{background:linear-gradient(160deg,#6cb8ff,#3a78e8)}
+.tg_b.g2 .tg_i{background:linear-gradient(160deg,#7bd88f,#2fa65a)}
+.tg_b.g3 .tg_i{background:linear-gradient(160deg,#ff8a8a,#e2495c)}
+.tg_b.g4 .tg_i{background:linear-gradient(160deg,#ffbf6b,#f0872b)}
+
+/* ریپل لمسی */
+.ms .m_it,.ms .m_bn button,.ms .m_rl button,.ms .m_ch button,.ms .m_tabs button,.m_mn button,.m_pp button,.m_dgb,.m_csb button,.ms .m_pgr{position:relative;overflow:hidden}
+.tg_rp{position:absolute;border-radius:50%;background:currentColor;opacity:.16;transform:scale(0);pointer-events:none;animation:tgRp .6s var(--tgr) forwards}
+
+/* دکمهٔ رفتن به آخرین پیام */
+.ms .tg_fab{position:absolute;inset-inline-end:14px;bottom:70px;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:var(--cd);color:var(--mu);box-shadow:0 2px 8px #0004;display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transform:translateY(10px) scale(.7);pointer-events:none;transition:opacity .2s ease,transform .28s var(--tgsp)}
+.ms .tg_fab.on{opacity:1;transform:none;pointer-events:auto}
+.ms .tg_fab svg.i{width:22px;height:22px;transform:rotate(90deg)}
+
+/* ویدیوپیام: قبل از دانلود فریم ثابت + فلش دانلود؛ بعد از لمس حلقهٔ چرخان */
+.ms .m_rv.cl{background:linear-gradient(160deg,#3a4a57,#26323d)}
+.ms .m_rv.cl .m_rpv{filter:blur(1.5px) brightness(.8);transform:scale(1.04)}
+.ms .m_rv.cl .m_rvp{width:50px;height:50px;background:#0008;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:transform .2s var(--tgsp)}
+.ms .m_rv.cl .m_rvp svg.i{width:26px;height:26px;stroke-width:2.2}
+.ms .m_rv.cl:active .m_rvp{transform:scale(.9)}
+.ms .m_rv .m_ring{width:50px;height:50px;background:#0008;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:tgRingIn .22s var(--tgsp)}
+.ms .m_rv .m_ring svg{width:42px;height:42px;animation:msSpin .9s linear infinite}
+.ms .m_rv .m_ring circle{stroke-width:2.6}
+.ms .m_rv .m_ring .bg{stroke:transparent}
+/* زمان و مدت روی خود دایره، مثل تلگرام */
+.ms .m_b:has(.m_rv) .m_bb{position:relative}
+.ms .m_b:has(.m_rv) .m_mt{display:contents}
+.ms .m_b:has(.m_rv) .m_vdur,.ms .m_b:has(.m_rv) .m_mstat{position:absolute;background:#0007;color:#fff;border-radius:99px;padding:1px 8px;font-size:.78em;display:inline-flex;align-items:center;gap:3px;z-index:4}
+.ms .m_b:has(.m_rv) .m_vdur{top:6px;inset-inline-start:6px}
+.ms .m_b:has(.m_rv) .m_mstat{bottom:6px;inset-inline-end:6px}
+.ms .m_b:has(.m_rv) .m_mt .rd{color:#7fdcff!important}
+
+/* پیام صوتی */
+.ms .m_vv>button,.ms .m_vo>button{width:44px;height:44px;transition:transform .2s var(--tgsp),background-color .2s ease}
+.ms .m_wf{height:30px}
+.ms .m_wf i{max-width:3px;border-radius:3px}
+
+@media (prefers-reduced-motion:reduce){.ms .fxc,.ms .m_pf,.ms .m_mv,.tg_sh,.tg_sc,.ms .tg_b,.ms .m_f,.ms .m_act.rc,.ms .m_rv .m_ring{animation:none!important}.tg_rp{display:none}.ms .tg_fab{transition:none}}
+</style>
 </head>
 <body><main id="root"></main><div id="ts" hidden></div><section class="rotate-screen" role="status" aria-live="polite"><div class="rotate-card"><svg class="rotate-icon" viewBox="0 0 64 64" aria-hidden="true"><rect x="15" y="6" width="22" height="42" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 42h4M43 19a17 17 0 0 1 11 16m0 0-6-5m6 5 4-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><h1>لطفاً گوشی را عمودی نگه دارید</h1><p>LINK برای استفاده در حالت عمودی طراحی شده است. برای ادامه، گوشی را به حالت عمودی بچرخانید.</p></div></section>
 <script>
@@ -672,7 +764,7 @@ const msCpH=()=>{const c=msCv();if(!c)return'';if(msAd()&&msAd().ro&&msAd().ro(c
 return (r?`<div class="m_rp">${ico('ms-reply')}<span>پاسخ به: ${esc(r.x||(r.a&&r.a.n)||'')}</span><button onclick="msRepX()">${ico('ms-x')}</button></div>`:'')
 +(MS.files.filter(f=>f.t!='file'&&f.t!='voice').length>1?`<div class="m_ma"><small>ارسال همه به‌صورت</small><button onclick="msModeAll(0)">رسانه</button><button onclick="msModeAll(1)">فایل</button></div>`:'')+(MS.files.length?`<div class="m_fs">${MS.files.map(msFH).join('')}</div>`:'')
 +(VR.er&&VR.ecid==MS.cid?`<div class="m_vre"><span>${esc(VR.er)}</span><button onclick="vrRetry()">تلاش دوباره</button><button onclick="vrErX()" title="بستن">${ico('ms-x')}</button></div>`:'')
-+(vrBarH()||`<div class="m_cr">${msActH()}<div class="m_ti"><textarea id="msTx" rows="1" placeholder="پیام…" oninput="msDraft(this)" onkeydown="msKey(event)">${esc(MS.dr[c.id]||'')}</textarea><div class="m_pw"><button onclick="msEmo()" onmousedown="event.preventDefault()" title="شکلک">${ico('ms-smile')}</button>${MS.emo?`<div class="m_pp m_em">${MSEM.map(e=>`<button onclick="msEmi('${e}')">${e}\uFE0E</button>`).join('')}</div>`:''}</div></div><div class="m_pw"><button onclick="msAtM()" onmousedown="event.preventDefault()" title="پیوست">${ico('ms-clip')}</button>${MS.am?`<div class="m_pp"><button onclick="msPickF('image')">${ico('ms-img')}تصویر</button><button onclick="msPickF('video')">${ico('ms-vid')}ویدیو</button><button onclick="msPickF('file')">${ico('ms-file')}فایل</button></div>`:''}</div></div>`)
++(vrBarH()||`<div class="m_cr">${msActH()}<div class="m_ti"><textarea id="msTx" rows="1" placeholder="پیام…" oninput="msDraft(this)" onkeydown="msKey(event)">${esc(MS.dr[c.id]||'')}</textarea><div class="m_pw"><button onclick="msEmo()" onmousedown="event.preventDefault()" title="شکلک">${ico('ms-smile')}</button>${MS.emo?`<div class="m_pp m_em">${MSEM.map(e=>`<button onclick="msEmi('${e}')">${e}\uFE0E</button>`).join('')}</div>`:''}</div></div><div class="m_pw"><button onclick="msAtM()" onmousedown="event.preventDefault()" title="پیوست">${ico('ms-clip')}</button>${MS.am?msAtSh():''}</div></div>`)
 +(msAd()?'':msIsD()?'<div class="m_nt">حالت آزمایشی: پیام‌ها و فایل‌ها فقط روی همین صفحه می‌مانند و به هیچ‌جا ارسال نمی‌شوند.</div>':`<div class="m_nt">ارسال فعال نیست؛ اتصال ${esc(msP().name)} در مرحلهٔ بعد اضافه می‌شود.</div>`)};
 function msView(){if(MV.on&&(!MS.p||MS.cid!=MV.c))msMvClose();if(!MS.p)return `<h3 style="margin:4px 0 10px">پیام‌رسان</h3><div class="grid">${MSGP.map(p=>`<div class="card" onclick="msGoP('${p.id}')"><b>${ico(p.ic)}</b><h3>${esc(p.name)}</h3><small>${p.ad?'متصل':p.lg?(p.id=='link'?'ورود با ایمیل و رمز':'ورود با شمارهٔ تلفن'):'ورود و اتصال بعداً اضافه می‌شود'}</small></div>`).join('')}</div><p class="mu">پیام‌رسان‌های بیشتر در آینده اضافه می‌شوند.</p>`;
 const p=msP(),ad=msAd();setTimeout(()=>{const e=$('#msMg');if(e)e.scrollTop=e.scrollHeight},0);if(MV.on)setTimeout(msMvAfter,0);
@@ -767,7 +859,7 @@ function msSq(x){MS.sq=x;msUpMg();const n=MS.sq.trim()?msMs().filter(m=>m.x&&m.x
 function msSqK(e){e.stopPropagation();if(e.key=='Enter'){e.preventDefault();msJ(MS.si+(e.shiftKey?-1:1))}}
 function msAtM(){MS.am=MS.am?0:1;MS.emo=0;msUpCp()}function msEmo(){MS.emo=MS.emo?0:1;MS.am=0;msUpCp()}
 function msEmi(ch){const c=MS.cid,t=$('#msTx'),v0=t?t.value:(MS.dr[c]||''),s=t?t.selectionStart:v0.length;MS.dr[c]=v0.slice(0,s)+ch+'\uFE0E'+v0.slice(s);MS.emo=0;msUpCp();const n=$('#msTx');if(n){n.focus();n.selectionStart=n.selectionEnd=s+2}}
-function msPickF(k){MS.am=0;msUpCp();const i=$('#msFi');i.dataset.k=k;i.accept=k=='image'?'image/*':k=='video'?'video/*':'';i.click()}
+function msPickF(k){MS.am=0;msUpCp();const i=$('#msFi');i.removeAttribute('capture');let d=k,ac='';if(k=='image'||k=='camera'){d='image';ac='image/*'}else if(k=='video'){ac='video/*'}else if(k=='gallery'){ac='image/*,video/*'}if(k=='camera')i.setAttribute('capture','environment');i.dataset.k=d;i.accept=ac;i.click()}
 function msFiles(i){const d=i.dataset.k||'file';[...i.files].forEach(f=>{const x=((f.name.match(/\.([^.]+)$/)||[])[1]||'').toLowerCase(),ty=/^image\//.test(f.type)||/^(png|jpe?g|gif|webp|bmp|avif|heic|heif|svg|tiff?)$/.test(x)?'image':/^video\//.test(f.type)||/^(mp4|mov|m4v|webm|mkv|avi|3gp|mpe?g|wmv|flv)$/.test(x)?'video':'file',ph=ty=='image'&&/^(png|jpe?g)$/.test(x),np=ty=='video'&&!document.createElement('video').canPlayType(f.type||'video/'+(x=='mov'?'quicktime':x));
 const o={n:f.name,s:f.size,t:ty,ph,np,f,u:ty=='file'?'':URL.createObjectURL(f),e:f.size>MSMAX?'حجم بیش از حد مجاز ('+msSz(MSMAX)+')':!f.size?'فایل خالی است':'',w:ty=='image'&&!ph?'برای ارسال به‌صورت عکس قالب JPG یا PNG لازم است؛ این تصویر به‌صورت فایل ارسال می‌شود':np?'مرورگر این قالب ویدیو را پخش نمی‌کند؛ بهتر است به‌صورت فایل ارسال شود':''};
 o.k=d=='file'?'file':ty=='image'?(ph?'image':'file'):ty=='video'?(np?'file':'video'):'file';
@@ -982,8 +1074,8 @@ const a=msAd();if(!a||!a.send)return toast('ارسال فعال نیست؛ ات�
 Promise.resolve(a.send({cid,text:'',files:[vf],reply:rep})).then(()=>{if(MS.rep===rep)MS.rep=null;if(MS.cid==cid)msUpMg(1)},()=>toast('ارسال پیام تصویری ناموفق بود: اتصال برقرار نیست'))}
 addEventListener('keydown',e=>{if(e.key=='Escape'&&VV.st&&VV.st!='stop'){e.preventDefault();vvCancel()}},true);
 /* حباب پیام تصویری گرد */
-const msDlRing=a=>{const v=(typeof LNK!='undefined'&&LNK.dg&&LNK.dg[a.fid])||0;return `<div class="m_ring"><svg viewBox="0 0 44 44"><circle class="bg" cx="22" cy="22" r="19"/><circle class="fg" cx="22" cy="22" r="19" style="stroke-dashoffset:${(119.4*(1-Math.max(.06,Math.min(1,v/100)))).toFixed(1)}"/></svg></div>`};
-function msRdCl(a,m){return `<div class="m_rv cl${a.ld?' ld':''}" data-f="${esc(a.fid)}" onclick="event.stopPropagation();${a.ld?'':`msRdBig('${m.id}',this)`}">${a.p?`<img class="m_rpv" src="${esc(a.p)}" alt="">`:ico('ms-vid')}${a.ld?msDlRing(a):`<i class="m_rvp m_dlb">${ico('ms-dl')}</i>`}</div>`}
+const msDlRing=a=>{const v=(typeof LNK!='undefined'&&LNK.dg&&LNK.dg[a.fid])||0;return `<div class="m_ring"><svg viewBox="0 0 44 44"><circle class="bg" cx="22" cy="22" r="19"/><circle class="fg" cx="22" cy="22" r="19" style="stroke-dashoffset:${(119.4*(1-Math.max(.25,Math.min(1,v/100)))).toFixed(1)}"/></svg></div>`};
+function msRdCl(a,m){return `<div class="m_rv cl${a.ld?' ld':''}" data-f="${esc(a.fid)}" onclick="event.stopPropagation();${a.ld?'':`msRdTap(this);msRdBig('${m.id}',this)`}">${a.p?`<img class="m_rpv" src="${esc(a.p)}" alt="">`:ico('ms-vid')}${a.ld?msDlRing(a):`<i class="m_rvp m_dlb">${ico('ms-dl')}</i>`}</div>`}
 const msRdH=(a,m)=>(!a.u&&a.fid&&m.st!='prog')?msRdCl(a,m):`<div class="m_rv${m.st=='prog'?' up':''}" onclick="event.stopPropagation();msRdBig('${m.id}',this)">${a.u?`<video src="${esc(a.u)}" ${a.p?`poster="${esc(a.p)}"`:''} playsinline muted loop autoplay preload="auto" onloadeddata="msRdLoaded(this,'${m.id}')" ontimeupdate="msRdProgress(this)" onended="msRdEnd(this)"></video>`:a.p?`<img class="m_rpv" src="${esc(a.p)}" alt="">`:ico('ms-vid')}<i class="m_rvp">${ico('ms-play')}</i>${a.u&&m.st!='prog'?'<svg class="m_rbg" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="48"/><circle class="fg" cx="50" cy="50" r="48"/></svg>':''}${m.st=='prog'?msRing(a,m):''}</div>`;
 function msRdProgress(v){const el=v.closest('.m_rv');if(!el||!el.classList.contains('user-play'))return;const c=el.querySelector('.m_rbg .fg');if(!c)return;const p=v.duration>0&&isFinite(v.duration)?Math.max(0,Math.min(1,v.currentTime/v.duration)):0;c.style.strokeDashoffset=(301.6*(1-p)).toFixed(1)}
 function msRdLoaded(v,id){if(MS._rdPlay===id)delete MS._rdPlay;v.muted=true;v.loop=true;if(!v.paused)return;const p=v.play();if(p&&p.catch)p.catch(()=>{})}
@@ -1619,7 +1711,7 @@ function lnkFa(x){const k=x.kind=='image'||x.kind=='video'||x.kind=='voice'?x.ki
 function lnkSetU(fid,u){for(const k in LNK.mg)(LNK.mg[k]||[]).forEach(m=>{if(m.a&&m.a.fid==fid){m.a.u=u;delete m.a.ld;delete m.a.er}})}
 function lnkRf(){clearTimeout(LNK.t3);LNK.t3=setTimeout(()=>{if(MS.p=='link'&&MS.cid)msUpMg()},120)}
 /* دریافت فایل با نشست کاربر (فایل‌ها خصوصی‌اند) و نگه‌داشتن آن برای نمایش و پخش */
-function lnkDp(fid,v){(LNK.dg||(LNK.dg={}))[fid]=v;document.querySelectorAll('#msMg [data-f="'+fid+'"] .m_ring .fg').forEach(g=>{g.style.strokeDashoffset=(119.4*(1-Math.max(.06,Math.min(1,v/100)))).toFixed(1)})}
+function lnkDp(fid,v){(LNK.dg||(LNK.dg={}))[fid]=v;document.querySelectorAll('#msMg [data-f="'+fid+'"] .m_ring .fg').forEach(g=>{g.style.strokeDashoffset=(119.4*(1-Math.max(.25,Math.min(1,v/100)))).toFixed(1)})}
 function lnkBlob(fid,mm,opt){
   opt=opt||{};
   if(LNK.bl[fid])return Promise.resolve(LNK.bl[fid]);
@@ -2037,4 +2129,17 @@ document.addEventListener('selectstart',e=>e.preventDefault(),true);
 document.addEventListener('selectionchange',()=>{const s=window.getSelection();if(s&&s.rangeCount)s.removeAllRanges()});
 document.addEventListener('select',e=>{const t=e.target;if((t instanceof HTMLInputElement||t instanceof HTMLTextAreaElement)&&t.selectionStart!==t.selectionEnd)t.setSelectionRange(t.selectionEnd,t.selectionEnd)},true);
 document.addEventListener('dragstart',e=>e.preventDefault(),true);
-</script></body></html>
+</script>
+<script>
+/* v2: شیت پیوست، حلقهٔ دانلود ویدیوپیام، ریپل لمسی و دکمهٔ رفتن به آخر */
+icAdd('ms-cam','<path class="f" d="M4 8.5A2 2 0 0 1 6 6.5h2l1.3-2h5.4l1.3 2h2a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.4"/>',[]);
+function msAtSh(){const B=(k,c,ic,t)=>`<button class="tg_b ${c}" onclick="event.stopPropagation();msPickF('${k}')"><span class="tg_i">${ico(ic)}</span><b>${t}</b></button>`;
+return `<div class="tg_sh" onclick="msAtX()"><div class="tg_sc" onclick="event.stopPropagation()"><i class="tg_hd"></i><div class="tg_gr">${B('gallery','g1','ms-img','گالری')}${B('camera','g2','ms-cam','دوربین')}${B('video','g3','ms-vid','ویدیو')}${B('file','g4','ms-file','فایل')}</div></div></div>`}
+function msAtX(){const e=document.querySelector('.tg_sh');if(!e||e.classList.contains('out'))return;e.classList.add('out');setTimeout(()=>{if(MS.am){MS.am=0;msUpCp()}},210)}
+function msRdTap(el){if(!el||el.classList.contains('ld'))return;const a=msAd();if(!a||!a.play)return;const b=el.querySelector('.m_dlb');if(!b)return;el.classList.add('ld');b.outerHTML=msDlRing({fid:el.dataset.f})}
+(function(){const SEL='.ms .m_it,.ms .m_bn button,.ms .m_rl button,.ms .m_ch button,.ms .m_tabs button,.tg_b,.m_mn button,.m_pp button,.m_dgb,.m_csb button,.ms .m_pgr';
+document.addEventListener('pointerdown',e=>{if(e.button>0)return;const h=e.target.closest&&e.target.closest(SEL);if(!h||h.disabled)return;const r=h.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.2,s=document.createElement('span');s.className='tg_rp';s.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';h.appendChild(s);setTimeout(()=>s.remove(),650)},{passive:true})})();
+(function(){function mk(){const c=document.querySelector('.ms .m_c');if(!c)return null;let f=c.querySelector('.tg_fab');if(!f){f=document.createElement('button');f.type='button';f.className='tg_fab';f.title='رفتن به آخرین پیام';f.innerHTML=ico('ms-back');f.onclick=()=>{const g=document.getElementById('msMg');if(g)g.scrollTo({top:g.scrollHeight,behavior:'smooth'})};c.appendChild(f)}return f}
+document.addEventListener('scroll',e=>{const g=e.target;if(!g||g.id!=='msMg')return;const b=mk();if(!b)return;const cp=document.getElementById('msCp');b.style.bottom=((cp?cp.offsetHeight:56)+14)+'px';b.classList.toggle('on',g.scrollHeight-g.scrollTop-g.clientHeight>240)},true)})();
+</script>
+</body></html>
