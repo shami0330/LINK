@@ -506,9 +506,19 @@ body{background:var(--bg);-webkit-tap-highlight-color:transparent}
   .cache-start-card{animation:none}
   .ms .m_it,.ms .m_ch,.ms .m_bn button,.ms .m_rl button,.ms .m_tabs button,.ms .m_b .m_bb,.ms button,.cache-start-card button{transition:none!important}
 }
+.rotate-screen{display:none}
+@media(orientation:landscape) and (max-height:600px) and (max-width:1100px){
+  .rotate-screen{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--tx);text-align:center}
+  .rotate-card{width:min(360px,100%);padding:28px 22px;border:1px solid var(--bd);border-radius:24px;background:var(--cd);box-shadow:0 12px 40px #0002}
+  .rotate-icon{width:64px;height:64px;margin:0 auto 16px;color:var(--ac);animation:rotateHint 2.4s ease-in-out infinite}
+  .rotate-card h1{margin:0 0 8px;font-size:1.2rem}
+  .rotate-card p{margin:0;color:var(--mu);line-height:1.9}
+  @keyframes rotateHint{0%,100%{transform:rotate(0)}40%,60%{transform:rotate(90deg)}}
+}
+@media(orientation:landscape) and (max-height:600px) and (max-width:1100px) and (prefers-reduced-motion:reduce){.rotate-icon{animation:none}}
 </style>
 </head>
-<body><main id="root"></main><div id="ts" hidden></div>
+<body><main id="root"></main><div id="ts" hidden></div><section class="rotate-screen" role="status" aria-live="polite"><div class="rotate-card"><svg class="rotate-icon" viewBox="0 0 64 64" aria-hidden="true"><rect x="15" y="6" width="22" height="42" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 42h4M43 19a17 17 0 0 1 11 16m0 0-6-5m6 5 4-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><h1>لطفاً گوشی را عمودی نگه دارید</h1><p>LINK برای استفاده در حالت عمودی طراحی شده است. برای ادامه، گوشی را به حالت عمودی بچرخانید.</p></div></section>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
