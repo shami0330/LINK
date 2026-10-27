@@ -1,0 +1,33 @@
+{
+  "name": "LINK — پیام‌رسان",
+  "short_name": "LINK",
+  "description": "پیام‌رسان LINK",
+  "lang": "fa",
+  "dir": "rtl",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff2c9",
+  "theme_color": "#178d58",
+  "icons": [
+    {
+      "src": "./icons/link-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/link-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/link-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
