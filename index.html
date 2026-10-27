@@ -343,6 +343,7 @@ html:is([data-nav=right],[data-nav=left]) #app main{padding-bottom:calc(env(safe
 .ms .m_b.sl:has(.m_rv) .m_rv{box-shadow:0 0 0 3px var(--ac)}
 .ms .m_rv{width:min(220px,62vw);height:auto;aspect-ratio:1;border-radius:50%;overflow:hidden;isolation:isolate;transform:translateZ(0);box-shadow:0 1px 3px #0003}
 .ms .m_rv video{border-radius:50%;object-fit:cover}
+.ms .m_rv .m_rpv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .ms .m_rv .m_rvp{display:none}.ms .m_rv.cl .m_rvp,.ms .m_rv.paused .m_rvp{display:flex}
 .ms .m_rv small{z-index:3}
 .m_rb{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;background:#0000;transition:background-color .25s ease;cursor:pointer}
@@ -365,6 +366,7 @@ html:is([data-nav=right],[data-nav=left]) #app main{padding-bottom:calc(env(safe
 
 .ms .m_rv{transition:width .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s}
 .ms .m_rv.big{width:min(270px,74vw);box-shadow:0 6px 24px #0004}
+.ms .m_rv:not(.user-play) .m_rbg{display:none}
 .ms .m_rv .m_rbg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);pointer-events:none;z-index:3}
 .ms .m_rv .m_rbg circle{fill:none;stroke:#fff;stroke-width:2.5;stroke-dasharray:301.6;stroke-dashoffset:301.6;stroke-linecap:round}
 .ms .m_tb{position:relative}.m_sg{position:absolute;top:100%;background-clip:padding-box;isolation:isolate;inset-inline-end:8px;width:min(300px,92%);z-index:60;display:flex;flex-direction:column;background:var(--cd);border:1px solid var(--bd);border-radius:10px;box-shadow:0 6px 18px #0003;overflow:hidden;margin-top:4px}.m_sg:empty{display:none}
@@ -713,19 +715,22 @@ function msOpen(id){if(MS.cid==id)return;vrCancel();vvCancel();vcStop();msPfX();
 function msClose(){vrCancel();vvCancel();vcStop();msPfX();MS.cid=null;MS.sel=null;MS.rep=null;MS.ss=0;MS.sq='';MS.am=0;MS.emo=0;msFree();msUpL();msUpC()}
 function msMenuX(){const m=$('#msMn');if(m)m.remove();if(MS.am||MS.emo){MS.am=MS.emo=0;msUpCp()}}
 /* v40.8: منوی پیام در لایهٔ شناور (document.body) ساخته می‌شود تا با دوباره‌کشیدن فهرست پیام‌ها (msUpMg) حذف نشود؛ هم با دکمهٔ سه‌نقطه و هم با راست‌کلیک باز می‌شود */
-function msMenu(id,btn,ev){const had=$('#msMn');msMenuX();if(btn&&!ev&&had&&had.dataset.m==id)return;const m=msMs().find(x=>x.id==id);if(!m)return;const d=document.createElement('div');d.id='msMn';d.dataset.m=id;d.className='m_mn fl';
-d.innerHTML=[['rep','ms-reply','پاسخ',1],['go','ms-reply','رفتن به پیام اصلی',m.r],['cp','ms-copy','کپی متن',m.x],['pin','ms-pin',m.pn?'برداشتن سنجاق':'سنجاق',1],['sel','ms-sel','انتخاب',1],['dl','ms-dl','دانلود',m.a],['del','trash','پاک کردن',1]].filter(x=>x[3]).map(x=>`<button class="${x[0]=='del'?'dn':''}" onclick="event.stopPropagation();msAct('${x[0]}','${id}')">${ico(x[1])}${x[2]}</button>`).join('');
+function msMenu(id,btn,ev){const had=$('#msMn');msMenuX();if(btn&&!ev&&had&&had.dataset.m==id)return;const m=msMs().find(x=>x.id==id),ad=msAd();if(!m)return;const d=document.createElement('div');d.id='msMn';d.dataset.m=id;d.className='m_mn fl';
+d.innerHTML=[['rep','ms-reply','پاسخ',1],['edit','ms-edit','ویرایش پیام',!!(m.o&&m.st!='prog'&&(m.x||m.a)&&ad&&ad.edit&&ad.canEdit&&ad.canEdit(id))],['go','ms-reply','رفتن به پیام اصلی',m.r],['cp','ms-copy','کپی متن',m.x],['pin','ms-pin',m.pn?'برداشتن سنجاق':'سنجاق',1],['sel','ms-sel','انتخاب',1],['dl','ms-dl','دانلود',m.a],['del','trash','پاک کردن',1]].filter(x=>x[3]).map(x=>`<button class="${x[0]=='del'?'dn':''}" onclick="event.stopPropagation();msAct('${x[0]}','${id}')">${ico(x[1])}${x[2]}</button>`).join('');
 d.oncontextmenu=e=>e.preventDefault();document.body.append(d);
 const br=btn?btn.getBoundingClientRect():null,w=d.offsetWidth,h=d.offsetHeight;let x=ev?ev.clientX:br.left,y=ev?ev.clientY:br.bottom+2;
 if(x+w>innerWidth-8)x=innerWidth-w-8;if(x<8)x=8;if(y+h>innerHeight-8)y=(ev?ev.clientY:br.top)-h-2;if(y<8)y=8;d.style.left=x+'px';d.style.top=y+'px'}
 function msAct(a,id){msMenuX();const m=msMs().find(x=>x.id==id),ad=msAd();if(!m)return;
 if(a=='rep'){MS.rep=id;msUpCp();const t=$('#msTx');t&&t.focus()}
+else if(a=='edit')msEdit(id);
 else if(a=='cp')navigator.clipboard&&navigator.clipboard.writeText(m.x).then(()=>toast('کپی شد'),()=>toast('کپی نشد'));
 else if(a=='pin'){m.pn=m.pn?0:1;MS.pi=0;ad&&ad.act&&ad.act('pin',{cid:MS.cid,ids:[id],on:m.pn});msUpCh();msUpMg()}
 else if(a=='sel'){MS.sel=[id];msUpCh();msUpMg()}
 else if(a=='dl')msDl(id);
 else if(a=='go')msGoMsg(m.r);
 else if(a=='del')msDel([id])}
+function msEdit(id){const m=msMs().find(x=>x.id==id),ad=msAd();if(!m||!m.o||!ad||!ad.edit||!ad.canEdit||!ad.canEdit(id))return toast('این پیام قابل ویرایش نیست');window.__msEi={cid:MS.cid,id};msDlg(`<h3 class="m_dgh">ویرایش پیام</h3><textarea id="msEi" class="m_dgi" rows="4" maxlength="4000">${esc(m.x||'')}</textarea><button class="m_dgb" id="msEiSave" onclick="msEditGo()">ذخیرهٔ تغییرات</button><button class="m_dgb c" onclick="msDlgX()">لغو</button>`);const t=$('#msEi');if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length)}}
+async function msEditGo(){const q=window.__msEi,t=$('#msEi'),b=$('#msEiSave'),ad=msAd(),m=q&&msMs().find(x=>x.id==q.id),text=t?t.value.trim():'';if(!q||!m||q.cid!=MS.cid||!ad||!ad.edit)return;if(!text&&!m.a)return toast('متن پیام نمی‌تواند خالی باشد');if(text.length>4000)return toast('متن پیام بلندتر از ۴۰۰۰ نویسه است');if(b)b.disabled=true;try{await ad.edit(q.cid,q.id,text);m.x=text;msDlgX();msUpMg();toast('پیام ویرایش شد')}catch(e){if(b)b.disabled=false;toast('ویرایش پیام ناموفق بود: '+esc(e&&e.fa||e&&e.message||'اتصال برقرار نیست'))}}
 /* v5.9: انتخاب گفتگوها (راست‌کلیک) و حذف برای خودم / برای هر دو طرف */
 const msCsH=()=>{const n=MS.cs.length;return `<div class="m_csb"><button onclick="msCsX()" title="لغو انتخاب">${ico('ms-x')}</button><b>${n?pd(n)+' گفتگو انتخاب شد':'گفتگوها را انتخاب کن'}</b><span style="flex:1"></span><button onclick="msCsAll()">همه</button><button class="dn" onclick="msCDelAsk(MS.cs.slice())" ${n?'':'disabled'}>${ico('trash')} پاک کردن</button></div>`};
 function msCsX(){MS.cs=null;msUpL()}
@@ -977,13 +982,13 @@ Promise.resolve(a.send({cid,text:'',files:[vf],reply:rep})).then(()=>{if(MS.rep=
 addEventListener('keydown',e=>{if(e.key=='Escape'&&VV.st&&VV.st!='stop'){e.preventDefault();vvCancel()}},true);
 /* حباب پیام تصویری گرد */
 const msDlRing=a=>{const v=(typeof LNK!='undefined'&&LNK.dg&&LNK.dg[a.fid])||0;return `<div class="m_ring"><svg viewBox="0 0 44 44"><circle class="bg" cx="22" cy="22" r="19"/><circle class="fg" cx="22" cy="22" r="19" style="stroke-dashoffset:${(119.4*(1-Math.max(.06,Math.min(1,v/100)))).toFixed(1)}"/></svg></div>`};
-function msRdCl(a,m){return `<div class="m_rv cl${a.ld?' ld':''}" data-f="${esc(a.fid)}" onclick="event.stopPropagation();${a.ld?'':`msRdBig('${m.id}',this)`}">${a.ld?msDlRing(a):`<i class="m_rvp m_dlb">${ico('ms-dl')}</i>`}<small>${a.du?vrFmt(a.du)+'  ':''}${esc(a.s||'')}</small></div>`}
-const msRdH=(a,m)=>(!a.u&&a.fid&&m.st!='prog')?msRdCl(a,m):`<div class="m_rv${m.st=='prog'?' up':''}" onclick="event.stopPropagation();msRdBig('${m.id}',this)">${a.u?`<video src="${esc(a.u)}" playsinline muted autoplay preload="auto" onloadeddata="msRdLoaded(this,'${m.id}')" ontimeupdate="msRdProgress(this)" onended="msRdEnd(this)"></video>`:ico('ms-vid')}<i class="m_rvp">${ico('ms-play')}</i>${a.u&&m.st!='prog'?'<svg class="m_rbg" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="48"/><circle class="fg" cx="50" cy="50" r="48"/></svg>':''}${m.st=='prog'?msRing(a,m):''}${a.du?`<small>${vrFmt(a.du)}</small>`:''}</div>`;
-function msRdProgress(v){const c=v.closest('.m_rv')?.querySelector('.m_rbg .fg');if(!c)return;const p=v.duration>0&&isFinite(v.duration)?Math.max(0,Math.min(1,v.currentTime/v.duration)):0;c.style.strokeDashoffset=(301.6*(1-p)).toFixed(1)}
-function msRdLoaded(v,id){v.muted=true;const p=v.play();if(p&&p.then)p.then(()=>{if(MS._rdPlay===id){delete MS._rdPlay;v.muted=false;const el=v.closest('.m_rv');el&&el.classList.remove('paused');el&&el.classList.add('pl','big')}}).catch(()=>{})}
+function msRdCl(a,m){return `<div class="m_rv cl${a.ld?' ld':''}" data-f="${esc(a.fid)}" onclick="event.stopPropagation();${a.ld?'':`msRdBig('${m.id}',this)`}">${a.p?`<img class="m_rpv" src="${esc(a.p)}" alt="">`:ico('ms-vid')}${a.ld?msDlRing(a):`<i class="m_rvp m_dlb">${ico('ms-dl')}</i>`}<small>${a.du?vrFmt(a.du)+'  ':''}${esc(a.s||'')}</small></div>`}
+const msRdH=(a,m)=>(!a.u&&a.fid&&m.st!='prog')?msRdCl(a,m):`<div class="m_rv${m.st=='prog'?' up':''}" onclick="event.stopPropagation();msRdBig('${m.id}',this)">${a.u?`<video src="${esc(a.u)}" ${a.p?`poster="${esc(a.p)}"`:''} playsinline muted loop autoplay preload="auto" onloadeddata="msRdLoaded(this,'${m.id}')" ontimeupdate="msRdProgress(this)" onended="msRdEnd(this)"></video>`:a.p?`<img class="m_rpv" src="${esc(a.p)}" alt="">`:ico('ms-vid')}<i class="m_rvp">${ico('ms-play')}</i>${a.u&&m.st!='prog'?'<svg class="m_rbg" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="48"/><circle class="fg" cx="50" cy="50" r="48"/></svg>':''}${m.st=='prog'?msRing(a,m):''}${a.du?`<small>${vrFmt(a.du)}</small>`:''}</div>`;
+function msRdProgress(v){const el=v.closest('.m_rv');if(!el||!el.classList.contains('user-play'))return;const c=el.querySelector('.m_rbg .fg');if(!c)return;const p=v.duration>0&&isFinite(v.duration)?Math.max(0,Math.min(1,v.currentTime/v.duration)):0;c.style.strokeDashoffset=(301.6*(1-p)).toFixed(1)}
+function msRdLoaded(v,id){if(MS._rdPlay===id)delete MS._rdPlay;v.muted=true;v.loop=true;if(!v.paused)return;const p=v.play();if(p&&p.catch)p.catch(()=>{})}
 function msRdBig(id,el){const m=msMs().find(x=>x.id==id);if(!m||!m.a)return;if(!m.a.u&&m.a.fid){if(m.a.ld)return;MS._rdPlay=id;msPlay(id);return}msRdPlay(el||document.querySelector('#msMg [data-m="'+id+'"] .m_rv'))}
-function msRdPlay(el){const v=el&&el.querySelector('video');if(!v)return;document.querySelectorAll('#msMg .m_rv.pl').forEach(x=>{if(x!==el){x.classList.remove('pl','big');x.classList.add('paused');const y=x.querySelector('video');y&&y.pause()}});if(v.paused){v.muted=false;el.classList.remove('paused');const p=v.play();if(p&&p.then)p.then(()=>el.classList.add('pl','big')).catch(()=>{el.classList.remove('pl','big');el.classList.add('paused');toast('پخش ویدیوپیام ممکن نشد')});else el.classList.add('pl','big')}else if(v.muted){v.muted=false;el.classList.remove('paused');el.classList.add('pl','big')}else{v.pause();el.classList.remove('pl','big');el.classList.add('paused')}}
-function msRdEnd(v){try{v.pause();v.currentTime=0}catch(e){}msRdProgress(v);v.parentNode.classList.remove('pl','big');v.parentNode.classList.add('paused')}
+function msRdPlay(el){const v=el&&el.querySelector('video');if(!v)return;document.querySelectorAll('#msMg .m_rv.user-play').forEach(x=>{if(x!==el){const y=x.querySelector('video');if(y){y.pause();y.currentTime=0;y.muted=true;y.loop=true}x.classList.remove('pl','big','user-play');x.classList.add('paused')}});if(!v.paused&&!v.muted){v.pause();el.classList.remove('pl','big','user-play');el.classList.add('paused');return}if(v.ended)try{v.currentTime=0}catch(e){}v.loop=false;v.muted=false;el.classList.remove('paused');el.classList.add('user-play','pl','big');const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;v.loop=true;el.classList.remove('user-play','pl','big');el.classList.add('paused');toast('پخش ویدیوپیام ممکن نشد')})}
+function msRdEnd(v){const el=v.parentNode;try{v.pause();v.currentTime=0}catch(e){}v.muted=true;v.loop=true;el.classList.remove('user-play','pl','big','paused');const p=v.play();if(p&&p.catch)p.catch(()=>{})}
 
 /* عکس و ویدیو به سبک تلگرام: فقط کادر رسانه + حلقهٔ چرخان پیشرفت ارسال/دریافت */
 const msMo=m=>!!(m.a&&(m.a.k=='image'||m.a.k=='video')&&!m.a.rd&&!m.x&&!m.r&&!m.sn);
@@ -1276,7 +1281,7 @@ if(h){e.preventDefault();e.stopImmediatePropagation()}},true);
    فقط از آداپتور MSGP (ad) استفاده می‌کند و رابط پیام‌رسان همان رابط مشترک است. داده (Appwrite TablesDB): users{name,email} · chats{memberA,memberB,pairKey,nameA,nameB,last,lastAt,unreadA,unreadB} · messages{chatId,fromId,text,replyTo,pinned,readByOther}
    ارسال فایل، عکس و صدا هنوز در لینک نیست (جدول پیام فیلد فایل ندارد). کتابخانهٔ Appwrite فقط وقتی «لینک» باز شود بارگذاری می‌شود. */
 const LNC={ep:'https://fra.cloud.appwrite.io/v1',pj:'6ad968ee002c73c4ca9a',db:'6ad969a5001ae9582c3e',tU:'6ad96bc700117baf5a06',tC:'6ad9c6e9001f15568d17',tM:'6ad9ca3a001a0e48e86c',bk:'6adf99470015c4d986f2',sdk:['https://cdn.jsdelivr.net/npm/appwrite@22.3.0/dist/iife/sdk.js','appwrite-sdk.js']};
-const LNK={st:'conn',err:'',busy:0,reg:0,v:{},cl:null,au:null,db:null,sv:null,bl:{},bb:{},bp:{},bf:{},bq:{},fm:{},up:{},uid:'',me:null,cv:[],mg:{},raw:{},lb:{},lim:{},mr:{},zr:{},ms:{},mk:new Set(),mine:new Set(),sg:'',lc:0,lm:0,sub:null,poll:null,t1:0,t2:0};
+const LNK={st:'conn',err:'',busy:0,reg:0,v:{},cl:null,au:null,db:null,sv:null,bl:{},bb:{},bp:{},bf:{},bq:{},fm:{},pm:{},up:{},uid:'',me:null,cv:[],mg:{},raw:{},lb:{},lim:{},mr:{},zr:{},ms:{},mk:new Set(),mine:new Set(),sg:'',lc:0,lm:0,sub:null,poll:null,t1:0,t2:0};
 const lnkJs=(u,ms)=>new Promise((ok,no)=>{const s=document.createElement('script');let d=0,t;const f=r=>{if(d)return;d=1;clearTimeout(t);if(r)ok();else{s.remove();no(new Error('sdk'))}};t=setTimeout(()=>f(0),ms||9000);s.src=u;s.onload=()=>f(1);s.onerror=()=>f(0);document.head.appendChild(s)});
 async function lnkSdk(){if(window.Appwrite&&Appwrite.Client)return;for(const u of LNC.sdk){try{await lnkJs(u)}catch(e){}if(window.Appwrite&&Appwrite.Client)return}throw new Error('sdk')}
 function lnkInit(){const c=new Appwrite.Client().setEndpoint(LNC.ep).setProject(LNC.pj);LNK.cl=c;LNK.au=new Appwrite.Account(c);LNK.db=new Appwrite.TablesDB(c);LNK.sv=new Appwrite.Storage(c)}
@@ -1413,7 +1418,7 @@ function lnkWin(cid,C){const lim=LNK.lim[cid]||100;return Object.values(C.rows).
 async function lnkRtMsg(r,p){const cid=p.chatId;if(!LNK.raw[cid])return;const C=await lnkMcGet(cid);
   if(!C.ts){if(MS.p=='link'&&cid==MS.cid)lnkSM();return}
   const del=(r.events||[]).some(e=>/\.delete$/.test(e));
-  if(del){const o=C.rows[p.$id],f=p.fileId||(o&&o.fileId);if(f)await lnkFc.del(f);await lnkMcDel(cid,p.$id)}else{C.rows[p.$id]=Object.assign(C.rows[p.$id]||{},p);C.dirty.add(p.$id);await lnkMcSave(cid)}
+  if(del){const o=C.rows[p.$id],f=p.fileId||(o&&o.fileId),ft=p.fileType||(o&&o.fileType)||'',pf=(String(ft).split('|').find(v=>v.startsWith('p:'))||'').slice(2);if(f)await lnkFc.del(f);if(pf)await lnkFc.del(pf);await lnkMcDel(cid,p.$id)}else{C.rows[p.$id]=Object.assign(C.rows[p.$id]||{},p);C.dirty.add(p.$id);await lnkMcSave(cid)}
   if(MS.p=='link'&&cid==MS.cid){clearTimeout(LNK.t2);LNK.t2=setTimeout(()=>lnkOnMsgs(cid,lnkWin(cid,C)),60)}}
 /* حافظهٔ ماندگار فایل‌ها (Cache Storage): عکس و ویدیوی دانلودشده یا ارسال‌شده دیگر دوباره دانلود نمی‌شود */
 const lnkFc={p:f=>'Cache/Link/files/'+String(f).replace(/[^\w.-]/g,'_'),
@@ -1454,7 +1459,7 @@ async function lnkLoadChats(){
 /* v5.9: حذف گفتگو — «برای خودم» فقط روی همین دستگاه پنهان می‌کند؛ «برای هر دو» پیام‌ها، فایل‌ها و خود گفتگو را از سرور پاک می‌کند (به شرط دسترسی Delete در Appwrite) */
 function lnkHd(){if(LNK._hu!==LNK.uid){LNK._hu=LNK.uid;try{LNK._hd=JSON.parse(localStorage.getItem('cls_lnk_hd_'+LNK.uid)||'{}')}catch(e){LNK._hd={}}}return LNK._hd}
 function lnkHm(){if(LNK._hmu!==LNK.uid){LNK._hmu=LNK.uid;try{LNK._hm=JSON.parse(localStorage.getItem('cls_lnk_hm_'+LNK.uid)||'{}')}catch(e){LNK._hm={}}}return LNK._hm}
-function lnkHideMsgs(cid,ids){const h=lnkHm();ids.forEach(i=>{h[i]=1});{const C=(LNK.mc||{})[cid];if(C){ids.forEach(i=>{const r=C.rows[i];if(r&&r.fileId)lnkFc.del(r.fileId);delete C.rows[i];C.dirty.delete(i);C.deleted.add(i)});lnkMcSave(cid)}}try{localStorage.setItem('cls_lnk_hm_'+LNK.uid,JSON.stringify(h))}catch(e){}}
+function lnkHideMsgs(cid,ids){const h=lnkHm();ids.forEach(i=>{h[i]=1;const pf=LNK.pm[i];if(pf)lnkFc.del(pf)});{const C=(LNK.mc||{})[cid];if(C){ids.forEach(i=>{const r=C.rows[i];if(r&&r.fileId)lnkFc.del(r.fileId);delete C.rows[i];C.dirty.delete(i);C.deleted.add(i)});lnkMcSave(cid)}}try{localStorage.setItem('cls_lnk_hm_'+LNK.uid,JSON.stringify(h))}catch(e){}}
 const lnkVs=()=>LNK._vs||(LNK._vs={}),lnkCleared=(cid,r)=>{const h=lnkHd()[cid];return !!h&&Date.parse(r.$createdAt)<=h};
 async function lnkDelChats(ids,both){
   const hd=lnkHd(),now=Date.now();
@@ -1469,7 +1474,7 @@ async function lnkDelChats(ids,both){
       const all=[];for(let off=0;off<5000;off+=100){const r=await lnkRows(LNC.tM,[Q.equal('chatId',[cid]),Q.limit(100),Q.offset(off)]);all.push(...r);if(r.length<100)break}
       const res=await Promise.allSettled(all.map(r=>lnkDel(LNC.tM,r.$id)));
       bad+=res.filter(x=>x.status=='rejected').length;
-      all.forEach((r,i)=>{if(res[i].status=='fulfilled'&&r.fileId)LNK.sv.deleteFile({bucketId:LNC.bk,fileId:r.fileId}).catch(()=>{})});
+      all.forEach((r,i)=>{if(res[i].status=='fulfilled'&&r.fileId){LNK.sv.deleteFile({bucketId:LNC.bk,fileId:r.fileId}).catch(()=>{});const pf=(String(r.fileType||'').split('|').find(v=>v.startsWith('p:'))||'').slice(2);if(pf)LNK.sv.deleteFile({bucketId:LNC.bk,fileId:pf}).catch(()=>{})}});
       try{await lnkDel(LNC.tC,cid);delete LNK.raw[cid]}catch(e){bad++}
     }catch(e){bad++}
     delete LNK.mg[cid];delete LNK.ms[cid];if(LNK.mc)delete LNK.mc[cid];lnkIdb.del('m:'+LNK.uid+':'+cid);
@@ -1607,14 +1612,15 @@ const lnkExt=n=>((String(n||'').match(/\.([^.]+)$/)||[])[1]||'').toLowerCase();
 /* موج صوتی (۰ تا ۳۱) به‌صورت رشتهٔ کوتاه کنار قالب فایل ذخیره می‌شود: «قالب|موج» */
 function lnkWfE(w){if(!w||!w.length)return'';const N=Math.min(w.length,60);let s='';for(let i=0;i<N;i++){const a=Math.floor(i*w.length/N),b=Math.max(a+1,Math.floor((i+1)*w.length/N));let v=0;for(let j=a;j<b&&j<w.length;j++)if(w[j]>v)v=w[j];s+=Math.max(0,Math.min(31,Math.round(v))).toString(32)}return s}
 const lnkWfD=s=>{const a=String(s||'').split('').map(c=>parseInt(c,32)||0);return a.length?a:undefined};
-function lnkFa(x){const k=x.kind=='image'||x.kind=='video'||x.kind=='voice'?x.kind:'file',p=String(x.fileType||'').split('|'),fid=x.fileId;LNK.fm[x.$id]=fid;(LNK.fz||(LNK.fz={}))[fid]=x.fileSize||0;
-  const a={k,m:k=='image'?'photo':k,n:x.fileName||'فایل',s:msSz(x.fileSize||0),u:LNK.bl[fid]||'',fid,mm:p[0]||'',du:x.dur||0,rd:k=='video'&&/^videomsg_/.test(String(x.fileName||''))?1:0};
+function lnkFa(x){const k=x.kind=='image'||x.kind=='video'||x.kind=='voice'?x.kind:'file',p=String(x.fileType||'').split('|'),fid=x.fileId,pf=(p.find(v=>v.startsWith('p:'))||'').slice(2);LNK.fm[x.$id]=fid;if(pf)(LNK.pm||(LNK.pm={}))[x.$id]=pf;(LNK.fz||(LNK.fz={}))[fid]=x.fileSize||0;
+  const a={k,m:k=='image'?'photo':k,n:x.fileName||'فایل',s:msSz(x.fileSize||0),u:LNK.bl[fid]||'',fid,mm:p[0]||'',du:x.dur||0,rd:k=='video'&&/^videomsg_/.test(String(x.fileName||''))?1:0,pfid:pf,p:pf?(LNK.bl[pf]||''):''};
   if(k=='voice'&&p[1])a.wf=lnkWfD(p[1]);if(!a.u&&LNK.bp[fid])a.ld=1;return a}
 function lnkSetU(fid,u){for(const k in LNK.mg)(LNK.mg[k]||[]).forEach(m=>{if(m.a&&m.a.fid==fid){m.a.u=u;delete m.a.ld;delete m.a.er}})}
 function lnkRf(){clearTimeout(LNK.t3);LNK.t3=setTimeout(()=>{if(MS.p=='link'&&MS.cid)msUpMg()},120)}
 /* دریافت فایل با نشست کاربر (فایل‌ها خصوصی‌اند) و نگه‌داشتن آن برای نمایش و پخش */
 function lnkDp(fid,v){(LNK.dg||(LNK.dg={}))[fid]=v;document.querySelectorAll('#msMg [data-f="'+fid+'"] .m_ring .fg').forEach(g=>{g.style.strokeDashoffset=(119.4*(1-Math.max(.06,Math.min(1,v/100)))).toFixed(1)})}
-function lnkBlob(fid,mm){
+function lnkBlob(fid,mm,opt){
+  opt=opt||{};
   if(LNK.bl[fid])return Promise.resolve(LNK.bl[fid]);
   if(LNK.bp[fid])return LNK.bp[fid];
   const url=String(new URL(LNK.sv.getFileView({bucketId:LNC.bk,fileId:fid})));
@@ -1622,14 +1628,15 @@ function lnkBlob(fid,mm){
   const viaFetch=async()=>{const h=Object.assign({},LNK.cl.headers||{});try{const fb=localStorage.getItem('cookieFallback');if(fb)h['X-Fallback-Cookies']=fb}catch(e){}
     const r=await fetch(url,{headers:h,credentials:'include'});if(!r.ok||!r.body)throw new Error('http '+r.status);
     const tot=+r.headers.get('content-length')||(LNK.fz&&LNK.fz[fid])||0,rd=r.body.getReader(),ch=[];let got=0;
-    for(;;){const q=await rd.read();if(q.done)break;ch.push(q.value);got+=q.value.length;lnkDp(fid,tot?Math.min(99,got/tot*100):0)}
+    for(;;){const q=await rd.read();if(q.done)break;ch.push(q.value);got+=q.value.length;if(opt.report!==false)lnkDp(fid,tot?Math.min(99,got/tot*100):0)}
     return await new Blob(ch).arrayBuffer()};
-  const p=lnkFc.get(fid,(LNK.fz||{})[fid]).then(cb=>cb?cb.arrayBuffer():viaFetch().catch(()=>{lnkDp(fid,0);return viaSdk()}).then(async ab=>{await lnkFc.put(fid,new Blob([ab],mm?{type:mm}:{}));return ab})).then(ab=>{const b=new Blob([ab],mm?{type:mm}:{});LNK.bb[fid]=b;const u=URL.createObjectURL(b);LNK.bl[fid]=u;lnkSetU(fid,u);return u}).finally(()=>{delete LNK.bp[fid];if(LNK.dg)delete LNK.dg[fid]});
+  const p=lnkFc.get(fid,(LNK.fz||{})[fid]).then(cb=>cb?cb.arrayBuffer():viaFetch().catch(()=>{if(opt.report!==false)lnkDp(fid,0);return viaSdk()}).then(async ab=>{await lnkFc.put(fid,new Blob([ab],mm?{type:mm}:{}));return ab})).then(ab=>{const b=new Blob([ab],mm?{type:mm}:{});LNK.bb[fid]=b;const u=URL.createObjectURL(b);LNK.bl[fid]=u;if(opt.assign!==false)lnkSetU(fid,u);return u}).finally(()=>{delete LNK.bp[fid];if(LNK.dg)delete LNK.dg[fid]});
   LNK.bp[fid]=p;return p}
-/* عکس‌های گفتگوی باز خودکار (حداکثر ۳ تا هم‌زمان) دریافت می‌شوند تا درجا دیده شوند */
+function lnkSetPoster(fid,u){for(const k in LNK.mg)(LNK.mg[k]||[]).forEach(m=>{if(m.a&&m.a.pfid==fid)m.a.p=u})}
+/* عکس‌ها و فریم پیش‌نمایش ویدیوپیام‌های گفتگوی باز، با حداکثر سه دریافت هم‌زمان */
 const lnkQ=[];let lnkQn=0;
 function lnkQp(){while(lnkQn<3&&lnkQ.length){const f=lnkQ.shift();lnkQn++;f().catch(()=>{}).then(()=>{lnkQn--;lnkQp()})}}
-function lnkPre(cid){(LNK.mg[cid]||[]).forEach(m=>{const a=m.a,f=a&&a.fid;if(!a||a.k!='image'||a.u||!f||LNK.bq[f]||LNK.bp[f]||(LNK.bf[f]||0)>=2)return;LNK.bq[f]=1;lnkQ.push(()=>lnkBlob(f,a.mm).then(lnkRf,()=>{LNK.bf[f]=(LNK.bf[f]||0)+1}).then(()=>{delete LNK.bq[f]}))});lnkQp()}
+function lnkPre(cid){(LNK.mg[cid]||[]).forEach(m=>{const a=m.a;if(!a)return;const poster=a.k=='video'&&a.pfid&&!a.p, f=poster?a.pfid:a.fid;if(!poster&&(a.k!='image'||a.u)||!f||LNK.bq[f]||LNK.bp[f]||(LNK.bf[f]||0)>=2){if(poster&&LNK.bl[f]){a.p=LNK.bl[f]}return}LNK.bq[f]=1;lnkQ.push(()=>lnkBlob(f,poster?'image/jpeg':a.mm,poster?{assign:false}:undefined).then(u=>{if(poster)lnkSetPoster(f,u);lnkRf()},()=>{LNK.bf[f]=(LNK.bf[f]||0)+1}).then(()=>{delete LNK.bq[f]}))});lnkQp()}
 const lnkMap=x=>{const o=x.fromId==LNK.uid?1:0;if(o)LNK.mine.add(x.$id);const rw=LNK.raw[x.chatId],r={_f:rw&&lnkG(rw)&&!o?x.fromId:'',sn:rw&&lnkG(rw)&&!o?lnkUn(x.fromId):'',id:x.$id,o,x:x.text||'',tm:lnkTm(new Date(x.$createdAt)),st:o?(x.readByOther?'read':'sent'):'',r:x.replyTo||null,pn:x.pinned?1:0,_rb:!!x.readByOther};if(x.fileId)r.a=lnkFa(x);return r};
 async function lnkLoadMsgs(cid,force){
   if(!cid||!LNK.uid)return;
@@ -1672,24 +1679,38 @@ function lnkMarkRead(cid){
 }
 const lnkPg=(id,v)=>{{const g=document.querySelector('#msMg [data-m="'+id+'"] .m_ring .fg');if(g)g.style.strokeDashoffset=(119.4*(1-Math.max(.08,v/100))).toFixed(1)}const b=document.querySelector('#msMg [data-m="'+id+'"] .m_prg i'),t=document.querySelector('#msMg [data-m="'+id+'"] .m_prg+small');if(b)b.style.width=v+'%';if(t)t.textContent=pd(v)+'٪ در حال ارسال…'};
 /* آپلود یک فایل (با نوار پیشرفت) و ساخت ردیف پیام آن */
+async function lnkVideoPoster(file){
+  const url=URL.createObjectURL(file),v=document.createElement('video');
+  v.muted=true;v.playsInline=true;v.preload='auto';v.src=url;
+  try{
+    await new Promise((ok,no)=>{const timer=setTimeout(()=>no(new Error('timeout')),10000);v.onloadeddata=()=>{clearTimeout(timer);ok()};v.onerror=()=>{clearTimeout(timer);no(new Error('decode'))};v.load()});
+    if(!v.videoWidth||!v.videoHeight)throw new Error('frame');const w=192,h=192,scale=Math.max(w/v.videoWidth,h/v.videoHeight),cw=w/scale,ch=h/scale,x=(v.videoWidth-cw)/2,y=(v.videoHeight-ch)/2,cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    const ctx=cv.getContext('2d',{alpha:false});if(!ctx)throw new Error('canvas');ctx.drawImage(v,x,y,cw,ch,0,0,w,h);
+    const blob=await new Promise(ok=>cv.toBlob(ok,'image/jpeg',.68));if(!blob)throw new Error('encode');return blob;
+  }finally{try{v.pause()}catch(e){}v.removeAttribute('src');try{v.load()}catch(e){}URL.revokeObjectURL(url)}
+}
 async function lnkSendF(cid,f,t,rp,perm){
   const k=LNL[f.k]?f.k:'file',fo=f.f,fid=Appwrite.ID.unique(),vd=f.vd||{},tid='u'+fid,lu=URL.createObjectURL(fo);
   const tmp={id:tid,o:1,x:t,tm:lnkTm(new Date()),st:'prog',r:rp,pn:0,a:{k,m:k=='image'?'photo':k,n:f.n,rd:k=='video'&&/^videomsg_/.test(String(f.n||''))?1:0,s:msSz(fo.size),u:k=='file'?'':lu,pr:0,du:Math.round(vd.d||0),wf:k=='voice'&&vd.wf&&vd.wf.length?vd.wf:undefined,mm:vd.mm||fo.type||''}};
   LNK.up[cid]=(LNK.up[cid]||[]).concat([tmp]);(LNK.mg[cid]||(LNK.mg[cid]=[])).push(tmp);
   if(MS.p=='link'&&MS.cid==cid)msUpMg(1);
   const clean=()=>{LNK.up[cid]=(LNK.up[cid]||[]).filter(m=>m.id!=tid);LNK.mg[cid]=(LNK.mg[cid]||[]).filter(m=>m.id!=tid)};
-  let up=0;
+  let up=0,posterFid='',posterUp=0,poster=null,posterUrl='';
+  if(k=='video'&&/^videomsg_/.test(String(f.n||'')))try{poster=await lnkVideoPoster(fo);posterUrl=URL.createObjectURL(poster);tmp.a.p=posterUrl;if(MS.p=='link'&&MS.cid==cid)msUpMg()}catch(e){toast('ساخت پیش‌نمایش فریم ناموفق بود؛ ویدیو ارسال می‌شود بدون پیش‌نمایش')}
   try{
     await LNK.sv.createFile({bucketId:LNC.bk,fileId:fid,file:fo,permissions:perm,onProgress:p=>{const v=Math.round(p.progress||0);tmp.a.pr=v;lnkPg(tid,v)}});
     up=1;if(tmp.cx)throw{cx:1};
-    const ft=(k=='voice'?tmp.a.mm+(tmp.a.wf?'|'+lnkWfE(tmp.a.wf):''):(fo.type||'')).slice(0,100);
-    const row=await lnkMk(LNC.tM,Appwrite.ID.unique(),{chatId:cid,fromId:LNK.uid,text:t,replyTo:rp,pinned:false,readByOther:false,fileId:fid,fileName:String(f.n||'file').slice(0,255),fileType:ft,fileSize:fo.size,kind:k,dur:Math.round(vd.d||0)},[Appwrite.Permission.delete(Appwrite.Role.user(LNK.uid))]);
+    if(poster){posterFid=Appwrite.ID.unique();try{const thumb=new File([poster],`preview_${posterFid}.jpg`,{type:'image/jpeg'});await LNK.sv.createFile({bucketId:LNC.bk,fileId:posterFid,file:thumb,permissions:perm});posterUp=1;(LNK.fz||(LNK.fz={}))[posterFid]=thumb.size;LNK.bl[posterFid]=posterUrl;LNK.bb[posterFid]=poster;try{await lnkFc.put(posterFid,poster)}catch(e){toast('پیش‌نمایش ساخته شد، اما در حافظهٔ گوشی ذخیره نشد')} }catch(e){posterFid='';if(posterUrl)URL.revokeObjectURL(posterUrl);posterUrl='';delete tmp.a.p;toast('پیش‌نمایش فریم در سرور ذخیره نشد؛ ویدیو ارسال می‌شود بدون پیش‌نمایش')}}
+    const ft=(k=='voice'?tmp.a.mm+(tmp.a.wf?'|'+lnkWfE(tmp.a.wf):''):(fo.type||''))+(posterFid?'|p:'+posterFid:'');
+    const row=await lnkMk(LNC.tM,Appwrite.ID.unique(),{chatId:cid,fromId:LNK.uid,text:t,replyTo:rp,pinned:false,readByOther:false,fileId:fid,fileName:String(f.n||'file').slice(0,255),fileType:ft,fileSize:fo.size,kind:k,dur:Math.round(vd.d||0)},[Appwrite.Permission.update(Appwrite.Role.user(LNK.uid)),Appwrite.Permission.delete(Appwrite.Role.user(LNK.uid))]);
     LNK.bl[fid]=lu;LNK.bb[fid]=fo;clean();await lnkFc.put(fid,fo);
     const L=LNK.mg[cid]||(LNK.mg[cid]=[]);if(!L.some(m=>m.id==row.$id))L.push(lnkMap(row));
     return row;
   }catch(e){
     clean();try{URL.revokeObjectURL(lu)}catch(x){}
+    if(posterUrl)URL.revokeObjectURL(posterUrl);
     if(up)LNK.sv.deleteFile({bucketId:LNC.bk,fileId:fid}).catch(()=>{});
+    if(posterUp){LNK.sv.deleteFile({bucketId:LNC.bk,fileId:posterFid}).catch(()=>{});lnkFc.del(posterFid);delete LNK.bl[posterFid];delete LNK.bb[posterFid]}
     if(MS.p=='link'&&MS.cid==cid)msUpMg();
     throw{fa:tmp.cx?'ارسال لغو شد':lnkEr(e)};
   }
@@ -1776,7 +1797,7 @@ async function lnkSend(o){
     if(LNX.indexOf(ex)<0)throw{fa:'قالب «'+(ex||'بدون پسوند')+'» در لینک مجاز نیست ('+f.n+')'};
     if(sz>LNL[k]&&k!='file')await lnkFit(f,k);if(f.f.size>LNL[k])throw{fa:'حجم '+LNM[k]+' ('+msSz(f.f.size)+') از سقف '+msSz(LNL[k])+' بیشتر است'+(k=='image'?'؛ کوچک‌ترش کن یا به‌صورت فایل بفرست':k=='video'?'؛ کوچک‌ترش کن یا کوتاه‌تر کن':'')};
   }
-  const ot=r0.memberA==me?r0.memberB:r0.memberA,perm=[Appwrite.Permission.read(Appwrite.Role.users()),Appwrite.Permission.delete(Appwrite.Role.user(me))];
+  const ot=r0.memberA==me?r0.memberB:r0.memberA,perm=[Appwrite.Permission.read(Appwrite.Role.users()),Appwrite.Permission.update(Appwrite.Role.user(me)),Appwrite.Permission.delete(Appwrite.Role.user(me))];
   const todo=fl.filter(f=>!f._sent),items=todo.length?todo:[null];
   if(fl.some(f=>f._sent&&f._tx))text='';
   let n=0,last='',err=null;
@@ -1784,7 +1805,7 @@ async function lnkSend(o){
     for(let i=0;i<items.length;i++){
       const f=items[i],t=i==0?text:'',rp=i==0?(o.reply||null):null;
       if(!f){
-        let row;try{row=await lnkMk(LNC.tM,Appwrite.ID.unique(),{chatId:cid,fromId:me,text:t,replyTo:rp,pinned:false,readByOther:false},[Appwrite.Permission.delete(Appwrite.Role.user(me))])}
+        let row;try{row=await lnkMk(LNC.tM,Appwrite.ID.unique(),{chatId:cid,fromId:me,text:t,replyTo:rp,pinned:false,readByOther:false},[Appwrite.Permission.update(Appwrite.Role.user(me)),Appwrite.Permission.delete(Appwrite.Role.user(me))])}
         catch(e){throw{fa:lnkEr(e)}}
         const L=LNK.mg[cid]||(LNK.mg[cid]=[]);if(!L.some(m=>m.id==row.$id))L.push(lnkMap(row));o.onRow&&o.onRow(row);
         last=t;
@@ -1816,6 +1837,7 @@ function lnkPlay(cid,id){
     else if(a.k=='video'&&!a.rd&&MS._inlinePlay==id){delete MS._inlinePlay;if(a.u)msInlineVid(id)}
   });
 }
+async function lnkEditMsg(cid,id,text){if(!LNK.mine.has(id))throw{fa:'فقط پیام‌های خودت را می‌توانی ویرایش کنی'};const row=await lnkUp(LNC.tM,id,{text});const m=(LNK.mg[cid]||[]).find(x=>x.id==id);if(m)m.x=row.text||text;if(MS.p=='link'&&MS.cid==cid)msUpMg();return row}
 async function lnkFull(cid,id){const m=(LNK.mg[cid]||[]).find(x=>x.id==id),a=m&&m.a;if(!a||!a.fid)return'';await lnkBlob(a.fid,a.mm);return LNK.bb[a.fid]?URL.createObjectURL(LNK.bb[a.fid]):''}
 async function lnkDl(cid,id){
   const m=(LNK.mg[cid]||[]).find(x=>x.id==id),a=m&&m.a;if(!a||!a.fid)return toast('فایل پیدا نشد');
@@ -1826,8 +1848,8 @@ function lnkDelMsgs(cid,ids){
   const mine=ids.filter(id=>LNK.mine.has(id));
   if(mine.length<ids.length){toast('فقط پیام‌های خودت را می‌شود حذف کرد');lnkLoadMsgs(cid)}
   if(!mine.length)return;
-  const fs=mine.map(id=>LNK.fm[id]).filter(Boolean);
-  return Promise.all(mine.map(id=>lnkDel(LNC.tM,id))).then(async()=>{const C=(LNK.mc||{})[cid];if(C){mine.forEach(i=>{delete C.rows[i];C.dirty.delete(i);C.deleted.add(i)});await lnkMcSave(cid);lnkOnMsgs(cid,lnkWin(cid,C))}await Promise.all(fs.map(f=>lnkFc.del(f)));fs.forEach(f=>LNK.sv.deleteFile({bucketId:LNC.bk,fileId:f}).catch(()=>{}))},()=>{toast('حذف انجام نشد');lnkLoadMsgs(cid,1)});
+  const fs=mine.map(id=>LNK.fm[id]).filter(Boolean),ps=mine.map(id=>LNK.pm[id]).filter(Boolean);
+  return Promise.all(mine.map(id=>lnkDel(LNC.tM,id))).then(async()=>{const C=(LNK.mc||{})[cid];if(C){mine.forEach(i=>{delete C.rows[i];C.dirty.delete(i);C.deleted.add(i)});await lnkMcSave(cid);lnkOnMsgs(cid,lnkWin(cid,C))}await Promise.all([...fs,...ps].map(f=>lnkFc.del(f)));[...fs,...ps].forEach(f=>LNK.sv.deleteFile({bucketId:LNC.bk,fileId:f}).catch(()=>{}))},()=>{toast('حذف انجام نشد');lnkLoadMsgs(cid,1)});
 }
 function lnkOpt(o){const cid=o.cid,tid='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),tmp={id:tid,o:1,x:o.text,tm:lnkTm(new Date()),st:'pend',r:o.reply||null,pn:0,_new:1};(LNK.mg[cid]||(LNK.mg[cid]=[])).push(tmp);LNK.up[cid]=(LNK.up[cid]||[]).concat([tmp]);setTimeout(()=>{tmp._new=0},500);return tid}
 function lnkOptShow(cid,tid){const h=document.getElementById('msMg'),m=(LNK.mg[cid]||[]).find(x=>x.id==tid);if(!h||!m||!h.querySelector('.m_b')){msUpMg(1);return}h.insertAdjacentHTML('beforeend',msBbH(m));const sc=h.closest('.m_mg')||h;try{sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'})}catch(e){sc.scrollTop=sc.scrollHeight}}
@@ -1841,6 +1863,8 @@ function lnkQsend(o,tid){o=Object.assign({},o,{onRow:row=>lnkOptSwap(o.cid,tid,r
 const LNA={
   data:()=>({cv:LNK.cv,mg:LNK.mg}),
   send:lnkSend,
+  canEdit:id=>LNK.mine.has(id),
+  edit:lnkEditMsg,
   play:lnkPlay,
   full:lnkFull,
   dl:lnkDl,

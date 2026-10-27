@@ -1,4 +1,4 @@
-const CACHE_NAME = 'link-shell-v1';
+const CACHE_NAME = 'link-shell-v2';
 const APP_SHELL = [
   './',
   './index.html',
