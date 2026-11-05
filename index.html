@@ -1,191 +1,156 @@
-<!doctype html><html lang=fa><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name=theme-color content=#000><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent>
-<title>Messenger</title><!-- Messenger v0.2 -->
+<!DOCTYPE html>
+<html lang="fa" dir="ltr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000"><title>Link</title>
 <style>
+/* [CSS-BASE] پایه و رنگ‌ها | Base & colors */
+:root{--ac:#3e88f7;--out:#7b5af0;--in:#2b2533;--sub:#8e8e93;--e:cubic-bezier(.2,.8,.2,1);
+/* [SAFE-AREA] ۵ پیکسل پایین‌تر از حاشیه امن | 5px below bottom safe area */
+--sb:max(0px,calc(env(safe-area-inset-bottom) - 5px))}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
-[hidden]{display:none!important}
-:root{--kb:0px;--sb:max(0px,calc(env(safe-area-inset-bottom) - 3px));--bl:#3e88f7;--s:#1c1c1e;--g:#8e8e93}
-html,body{position:fixed;inset:0;overflow:hidden;background:#000;color:#fff;font:17px/1.25 -apple-system,system-ui,Vazirmatn,Tahoma,sans-serif;direction:ltr;text-align:left;overscroll-behavior:none;-webkit-user-select:none;user-select:none}
-textarea,input{-webkit-user-select:text;user-select:text}
-#app{position:absolute;inset:0}
-.pg{position:absolute;inset:0;display:flex;flex-direction:column;background:#000;transform:translate3d(100%,0,0);visibility:hidden;transition:transform .2s cubic-bezier(.3,.7,.2,1),visibility 0s .2s}
-.pg.on{transform:none;visibility:visible;transition:transform .2s cubic-bezier(.3,.7,.2,1),visibility 0s}
-.pg.sh{top:12px;border-radius:24px 24px 0 0;transform:translate3d(0,100%,0);box-shadow:0 -.5px 0 #333}
-.pg.sh.on{transform:none}
-#chat{z-index:3}#newc{z-index:2}
-button,input,textarea{font:inherit;color:inherit;border:0;background:none;outline:0;text-align:inherit}
-.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.hd{display:flex;align-items:center;gap:8px;padding:max(8px,calc(env(safe-area-inset-top) - 6px)) 12px 8px;flex:none}
-.cb{width:40px;height:40px;border-radius:20px;background:var(--s);display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
-.cb.pl{width:auto;padding:0 17px;font-weight:500}
-.cb.bk{width:auto;min-width:40px;padding:0 10px 0 8px;gap:4px}
-.ti{flex:1;display:flex;justify-content:center;align-items:center;gap:6px;font-weight:600}
-.cp{flex:1;min-width:0;height:40px;border-radius:20px;background:var(--s);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
-.cp b{font-size:16px;font-weight:600;max-width:100%;padding:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sm{font-size:12px;color:var(--g)}
-.wb{background:#fff;color:#000;font-style:normal;font-size:15px;font-weight:600;border-radius:11px;padding:0 7px;line-height:22px;min-width:22px;text-align:center}
-.sw{display:flex;align-items:center;gap:12px;padding:0 15px;flex:none}
-.sb{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;height:40px;margin:10px 0 6px;border-radius:20px;background:var(--s);color:var(--g)}
-.sb:focus-within{justify-content:flex-start;padding-left:14px}
-.sb input{width:64px;color:#fff}.sb input:focus{flex:1;width:auto}
-.sb input::placeholder{color:var(--g);opacity:1}
-.cc{display:none;color:var(--bl)}
-.sx .hd,.sx #tb,.sx #rows{display:none}.sx .cc{display:block}.sx #sres{display:block}
-.rows{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-bottom:110px}
-#sres{display:none;flex:1;overflow-y:auto}
-.r{display:flex;gap:11px;padding:8px 15px;align-items:center;position:relative}
-.r::after{content:'';position:absolute;left:81px;right:0;bottom:0;border-bottom:.5px solid #2c2c2e}
-.r:active{background:var(--s)}
-.b{flex:1;min-width:0}
-.l{display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
-.l b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
-.l time{color:var(--g);font-size:15px;flex:none}
-.l span{color:var(--g);font-size:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;unicode-bidi:plaintext}
-.bg{flex:none;background:var(--bl);font-style:normal;font-size:15px;font-weight:600;border-radius:11px;min-width:22px;line-height:22px;text-align:center;padding:0 7px;margin-top:2px}
-.av{width:55px;height:55px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:22px;flex:none}
-.r.c{padding:6px 15px}.r.c::after{left:67px}.c .av{width:40px;height:40px;font-size:16px}
-.c b{display:block;font-weight:600;unicode-bidi:plaintext}.s2{color:var(--g);font-size:14px;display:block}
-.k{color:var(--bl);gap:14px;padding:12px 18px}.k .ic{width:28px;height:28px}
-.lt{padding:12px 16px 4px;color:var(--g);font-size:15px;font-weight:600}
-#ix{position:absolute;right:4px;top:28%;display:flex;flex-direction:column;gap:5px;color:var(--bl);font-size:12px;font-weight:600}#ix i{font-style:normal}
-.em{color:var(--g);text-align:center;padding:40px 24px}
-#tb{position:absolute;left:0;right:0;bottom:calc(var(--sb) + 8px);display:flex;gap:8px;justify-content:center;align-items:center}
-#tp{width:224px;height:62px;border-radius:31px;background:rgba(28,28,30,.95);display:flex;padding:4px}
-.tab{flex:1;position:relative;border-radius:27px;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff}
-.tab.a{background:rgba(255,255,255,.12);color:var(--bl)}
-.tab .bg{position:absolute;top:1px;left:50%;background:#e5473c;line-height:18px;min-width:18px;font-size:12px;padding:0 5px}
-#sa .av{width:26px;height:26px;font-size:12px}
-#tsx{width:62px;height:62px;border-radius:31px;background:rgba(28,28,30,.95)}
-#mw{flex:1;position:relative;min-height:0}
-#ms{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column-reverse;background-color:#0a0610}
-#mi{display:flex;flex-direction:column;padding:6px 8px 8px}
-.m{position:relative;max-width:82%;align-self:flex-start;padding:7px 11px 6px;border-radius:18px;background:#2b2432;margin-top:2px;white-space:pre-wrap;word-break:break-word}
-.m.o{align-self:flex-end;background:#7d5cf3}
-.m.t{margin-bottom:6px}.m.t:not(.o){border-bottom-left-radius:4px}.m.t.o{border-bottom-right-radius:4px}
-.m.t::after{content:'';position:absolute;bottom:0;width:9px;height:14px;background:inherit}
-.m.t:not(.o)::after{left:-6px;clip-path:polygon(100% 0,100% 100%,0 100%)}
-.m.t.o::after{right:-6px;clip-path:polygon(0 0,0 100%,100% 100%)}
-.x{unicode-bidi:plaintext}
-.m i{float:right;font-style:normal;font-size:12px;color:rgba(255,255,255,.55);margin:7px 0 -2px 10px}
-.dt{align-self:center;background:rgba(28,28,30,.85);border-radius:14px;padding:3px 11px;font-size:14px;font-weight:500;margin:8px 0}
-#dn{position:absolute;right:12px;bottom:10px;opacity:0;pointer-events:none;transition:opacity .15s}#dn.on{opacity:1;pointer-events:auto}
-#bar{display:flex;align-items:flex-end;gap:8px;padding:6px 10px;flex:none}
-#iw{flex:1;position:relative;background:var(--s);border-radius:20px;min-height:40px}
-#in{display:block;width:100%;padding:9px 44px 9px 16px;min-height:40px;max-height:120px;resize:none;line-height:22px;unicode-bidi:plaintext}
-#iw .ic{position:absolute;right:11px;bottom:8px;color:var(--g)}
-#sd .si,#sd.go .mi{display:none}#sd.go .si{display:block}#sd.go{background:var(--bl)}
-#sp{flex:none;height:max(var(--kb),var(--sb));transition:height .25s cubic-bezier(.2,.8,.2,1)}
-#auth{align-items:center;justify-content:center;gap:12px;padding:24px;transform:none}
-#auth input{width:100%;max-width:340px;background:var(--s);border-radius:14px;padding:14px 16px}
-.bt{width:100%;max-width:340px;border-radius:14px;padding:14px;text-align:center;background:var(--bl);font-weight:600}
-.bt.g{background:var(--s);color:var(--bl)}
-#er{color:#ff6b6b;font-size:14px;max-width:340px}
+html,body{height:100%;overflow:hidden;background:#000;color:#fff;font:16px -apple-system,system-ui,sans-serif;direction:ltr;text-align:left;overscroll-behavior:none}
+#app{position:fixed;inset:0}
+#v{position:absolute;inset:0;overflow-y:auto;padding:calc(env(safe-area-inset-top) + 8px) 12px 110px}
+.hd{display:flex;align-items:center;justify-content:space-between;height:48px}
+.ci,.pill{background:#1c1c1e;border-radius:24px;height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;border:0;color:#fff;font:inherit;font-size:20px}
+.pill{flex-direction:column;padding:0 24px;font-size:16px}
+.sr{background:#1c1c1e;border-radius:22px;height:40px;margin:8px 0;padding:0 14px}
+.sr input{background:none;border:0;color:#fff;font:inherit;outline:0;width:100%;height:100%}
+.row{display:flex;gap:12px;padding:10px 4px;align-items:center;border-bottom:.5px solid #222;content-visibility:auto;contain-intrinsic-size:auto 68px}
+.row:active{background:#1c1c1e}
+.av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font:600 20px system-ui;flex:none;color:#fff}
+.av.sm{width:44px;height:44px;font-size:17px}.av.xl{width:96px;height:96px;font-size:38px;margin:auto}
+.mid{flex:1;min-width:0}.mid b,.mid span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid span{color:var(--sub);font-size:15px;margin-top:2px}
+.rt{text-align:right;color:var(--sub);font-size:13px}
+.bd{background:var(--ac);color:#fff;border-radius:11px;min-width:22px;padding:1px 7px;font-size:13px;display:inline-block;margin-top:4px;font-style:normal}
+.em{color:var(--sub);text-align:center;margin-top:40px}
+#tb{position:absolute;left:12px;right:12px;bottom:var(--sb);display:flex;gap:10px;z-index:5}
+#tb nav{flex:1;display:flex;background:#1c1c1e;border-radius:32px;padding:6px}
+.t{flex:1;display:flex;flex-direction:column;align-items:center;font-size:11px;padding:6px 0;border-radius:26px;color:#fff;background:none;border:0}
+.t.on{background:#2c2c2e;color:var(--ac)}.t svg{width:26px;height:26px;fill:currentColor}
+.cd{background:#1c1c1e;border-radius:20px;margin:14px 0;padding:4px 14px}.cd .row{border:0;justify-content:space-between}
+.sg{display:flex;background:#2c2c2e;border-radius:10px;padding:2px}
+.sg button{border:0;background:none;color:#fff;padding:6px 12px;border-radius:8px;font:inherit}.sg .on{background:var(--ac)}
+/* [CSS-PAGES] صفحه‌های لغزان | Sliding pages */
+.pg{position:absolute;inset:0;background:#000;transform:translateX(100%);transition:transform .22s var(--e);display:flex;flex-direction:column;z-index:9;will-change:transform}
+.pg.on{transform:none}
+#ms{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:4px;background:#0a0710}
+.b{max-width:78%;padding:7px 11px;border-radius:18px;animation:pop .2s var(--e) both;word-break:break-word}
+.b.i{background:var(--in);align-self:flex-start;border-bottom-left-radius:6px}
+.b.o{background:var(--out);align-self:flex-end;border-bottom-right-radius:6px}
+.b s{display:block;text-align:right;font-size:11px;opacity:.6;text-decoration:none}
+.b q{display:block;border-left:3px solid #fff8;padding-left:8px;margin-bottom:4px;font-size:14px;opacity:.85;quotes:none}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.rbar{padding:6px 14px;background:#1c1c1e;color:var(--sub);font-size:14px}
+#cp{display:flex;gap:8px;padding:8px 10px calc(var(--sb) + 4px)}
+#cp input{flex:1;height:44px;border-radius:22px;border:0;background:#1c1c1e;color:#fff;padding:0 16px;font:inherit;outline:0}
+#au{justify-content:center;align-items:center}
+.ctr{display:flex;flex-direction:column;gap:12px;padding:24px;width:100%;max-width:380px}
+.ctr input,.bt{height:48px;border-radius:14px;border:0;font:inherit;padding:0 14px;background:#1c1c1e;color:#fff}
+.bt{background:var(--ac);font-weight:600}.bt.g{background:#2c2c2e}#er{color:#ff453a;font-size:14px}
 </style></head><body>
-<svg width=0 height=0 style=position:absolute><defs>
-<symbol id=s viewBox="0 0 24 24"><circle cx=11 cy=11 r=7 /><path d="M20 20l-4-4"/></symbol>
-<symbol id=e viewBox="0 0 24 24"><path d="M12 5H7a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3v-5"/><path d="M18.5 3.5l2 2-8 8H10v-2.5z"/></symbol>
-<symbol id=l viewBox="0 0 24 24"><rect x=5 y=11 width=14 height=9 rx=2.5 /><path d="M8 11V8a4 4 0 0 1 7.700-1.500"/></symbol>
-<symbol id=a viewBox="0 0 24 24"><circle cx=12 cy=12 r=9 stroke-dasharray="3 3"/><path d="M12 8v8M8 12h8"/></symbol>
-<symbol id=p viewBox="0 0 24 24"><circle cx=12 cy=8 r=4 /><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></symbol>
-<symbol id=c viewBox="0 0 24 24"><path d="M4 12c0-4 3.500-7 8-7s8 3 8 7-3.500 7-8 7c-1.200 0-2.300-.2-3.300-.6L4 20l1.200-3.600C4.400 15.300 4 13.700 4 12z"/></symbol>
-<symbol id=k viewBox="0 0 24 24"><path d="M16 7l-7 7a2 2 0 0 0 3 3l7-7a4 4 0 0 0-6-6l-7 7a6 6 0 0 0 9 9l5-5"/></symbol>
-<symbol id=t viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-5a4 4 0 0 1-4-4z"/></symbol>
-<symbol id=m viewBox="0 0 24 24"><rect x=9 y=3 width=6 height=11 rx=3 /><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
-<symbol id=b viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
-<symbol id=d viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></symbol>
-<symbol id=u viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
-<symbol id=x viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
-<symbol id=g viewBox="0 0 24 24"><circle cx=9 cy=9 r=3 /><circle cx=17 cy=10 r=2.500 /><path d="M3 19c0-3 3-5 6-5s6 2 6 5M15 15c3-.5 6 1 6 4"/></symbol>
-<symbol id=n viewBox="0 0 24 24"><circle cx=10 cy=8 r=4 /><path d="M3 20c0-4 3.500-6 7-6M18 14v6M15 17h6"/></symbol>
-<symbol id=h viewBox="0 0 24 24"><path d="M4 10v4h3l8 4V6L7 10z"/><path d="M18 9v6"/></symbol>
-</defs></svg>
-<div id=app>
-<section id=auth class="pg on">
-<h1 data-i=ti></h1>
-<input id=un data-p=u autocapitalize=none autocomplete=username>
-<input id=pw data-p=p type=password autocomplete=current-password>
-<div id=er></div>
-<button class=bt onclick=go() data-i=go></button>
-<button class="bt g" onclick=go(1) data-i=g></button>
-<button class=lg onclick=lgx()></button>
-</section>
-<section id=list class=pg>
-<div class=hd><button class="cb pl" data-i=ed></button><div class=ti onclick=lgx()><svg class=ic><use href=#l /></svg><b data-i=ch></b></div><button class=cb><svg class=ic><use href=#a /></svg></button><button class=cb onclick=nc()><svg class=ic><use href=#e /></svg></button></div>
-<div class=sw><div class=sb><svg class=ic><use href=#s /></svg><input id=sq data-p=s oninput=sr()></div><button class=cc onclick=sx(0) data-i=cx></button></div>
-<div class=rows id=rows></div><div id=sres></div>
-<div id=tb><div id=tp><button class=tab><svg class=ic><use href=#p /></svg><span data-i=co></span></button><button class="tab a"><svg class=ic><use href=#c /></svg><span data-i=ch></span><em class=bg id=tbd hidden></em></button><button class=tab><div id=sa></div><span data-i=se></span></button></div><button id=tsx class=cb onclick="$('#sq').focus()"><svg class=ic><use href=#s /></svg></button></div>
-</section>
-<section id=chat class=pg>
-<div class=hd><button class="cb bk" onclick=back()><svg class=ic><use href=#b /></svg><em class=wb id=bb hidden></em></button><div class=cp><b id=cn></b><span class=sm data-i=ls></span></div><div class=cb id=ca></div></div>
-<div id=mw><div id=ms><div id=mi></div></div><button class=cb id=dn onclick="$('#ms').scrollTo({top:0,behavior:'smooth'})"><svg class=ic><use href=#d /></svg></button></div>
-<div id=bar><button class=cb><svg class=ic><use href=#k /></svg></button><div id=iw><textarea id=in rows=1 data-p=m></textarea><svg class=ic><use href=#t /></svg></div><button class=cb id=sd onpointerdown=event.preventDefault() onclick=send()><svg class="ic mi"><use href=#m /></svg><svg class="ic si" style=stroke:#fff;stroke-width:2.4><use href=#u /></svg></button></div>
-<div id=sp></div>
-</section>
-<section id=newc class="pg sh">
-<div class=hd><button class=cb onclick="pg('newc',0)"><svg class=ic><use href=#x /></svg></button><b class=ti data-i=nm></b><span style=width:40px></span></div>
-<div class=sw><div class=sb><svg class=ic><use href=#s /></svg><input id=q data-p=s oninput=ncr()></div></div>
-<div class=rows id=ct style=padding-bottom:24px><div class="r k"><svg class=ic><use href=#g /></svg><span data-i=ng></span></div><div class="r k"><svg class=ic><use href=#n /></svg><span data-i=nk></span></div><div class="r k"><svg class=ic><use href=#h /></svg><span data-i=nl></span></div><div id=ul></div></div>
-<div id=ix></div>
-</section>
-</div>
+<div id="app"><div id="v"></div><div id="tb"></div><div id="ch" class="pg"></div><div id="au" class="pg"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2"></script>
 <script>
-const $=s=>document.querySelector(s),L=localStorage,D='msg',M='messages',U='users',H=document.documentElement;
-const T={fa:{ti:'پیام‌رسان',u:'ایمیل یا نام کاربری',p:'رمز عبور',go:'ورود / ثبت‌نام',g:'ورود مهمان',ed:'ویرایش',ch:'گفتگوها',co:'مخاطبین',se:'تنظیمات',s:'جستجو',m:'پیام',nm:'پیام جدید',ng:'گروه جدید',nk:'مخاطب جدید',nl:'کانال جدید',ls:'آخرین بازدید به‌تازگی',cx:'لغو',em:'هنوز گفتگویی نیست'},
-en:{ti:'Messenger',u:'Email or username',p:'Password',go:'Sign in / Sign up',g:'Continue as guest',ed:'Edit',ch:'Chats',co:'Contacts',se:'Settings',s:'Search',m:'Message',nm:'New Message',ng:'New Group',nk:'New Contact',nl:'New Channel',ls:'last seen recently',cx:'Cancel',em:'No chats yet'}};
-const c=new Appwrite.Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('6aecbdce0036439c36ca');
-const A=new Appwrite.Account(c),DB=new Appwrite.Databases(c),{ID,Query:Q,Permission:P,Role:R}=Appwrite;
-let lang=L.lang||'fa',me,cur,all=new Map,us={};const sn=JSON.parse(L.sn||'{}');
-const t=k=>T[lang][k],esc=s=>String(s).replace(/[&<>"]/g,x=>'&#'+x.charCodeAt(0)+';'),fm=x=>x>999?(x/1e3).toFixed(1)+'K':x;
-const hue=s=>Math.abs([...s].reduce((a,x)=>a*31+x.charCodeAt(0)|0,7))%360;
-const av=(n,id)=>{const h=hue(id);return`<div class=av style="background:linear-gradient(hsl(${h} 60% 58%),hsl(${h} 60% 42%))">${esc((n||'?')[0].toUpperCase())}</div>`};
-const tm=d=>new Date(d).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
-const ft=d=>{const a=new Date(d),n=new Date();return a.toDateString()==n.toDateString()?tm(d):(n-a)/864e5<6?a.toLocaleDateString(lang,{weekday:'short'}):String(a.getMonth()+1).padStart(2,0)+'/'+String(a.getDate()).padStart(2,0)};
-const cid=(a,b)=>[a,b].sort().join('_'),pg=(id,on=1)=>$('#'+id).classList.toggle('on',!!on);
-$('#ms').style.backgroundImage=`url("data:image/svg+xml,${encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170' fill='none' stroke='#2a1d40' stroke-width='1.6' stroke-linecap='round'><circle cx='28' cy='28' r='9'/><path d='M96 20l4 9 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z'/><path d='M135 92c10-13 24 6 12 14s-27-4-22-14'/><path d='M30 120q10-14 20 0t20 0'/><path d='M105 142h18M114 133v18'/><circle cx='146' cy='30' r='4'/><path d='M22 150l12-12 6 6-12 12z'/><path d='M70 70c8-8 18 2 10 10s-18 0-10-10z'/></svg>")}")`;
-function i18n(){document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));document.querySelectorAll('[data-p]').forEach(e=>e.placeholder=t(e.dataset.p));document.querySelectorAll('.lg').forEach(e=>e.textContent=lang=='fa'?'EN':'فا');H.lang=lang;list();chat()}
-function lgx(){lang=lang=='fa'?'en':'fa';L.lang=lang;i18n()}
-async function usr(id){if(us[id])return;us[id]={name:'…'};try{us[id]=await DB.getDocument(D,U,id);list();chat()}catch{}}
-async function lu(){if(lu.d)return;lu.d=1;try{(await DB.listDocuments(D,U,[Q.limit(200)])).documents.forEach(d=>us[d.$id]=d)}catch{lu.d=0}}
-function grp(){const g={};all.forEach(m=>{const x=g[m.chat]||(g[m.chat]={m,n:0});if(m.$createdAt>x.m.$createdAt)x.m=m;if(m.sender!=me.$id&&m.$createdAt>(sn[m.chat]||''))x.n++});return g}
-function bd(){const g=grp(),k=cur&&cid(me.$id,cur);let n=0,o=0;for(const i in g){n+=g[i].n;if(i!=k)o+=g[i].n}$('#tbd').textContent=fm(n);$('#tbd').hidden=!n;$('#bb').textContent=fm(o);$('#bb').hidden=!o}
-function list(){if(!me)return;$('#rows').innerHTML=Object.values(grp()).sort((a,b)=>b.m.$createdAt.localeCompare(a.m.$createdAt)).map(({m,n})=>{const id=m.sender==me.$id?m.peer:m.sender;usr(id);const u=us[id];return`<div class=r data-id="${id}">${av(u.name,id)}<div class=b><div class=l><b>${esc(u.name)}</b><time>${ft(m.$createdAt)}</time></div><div class=l><span>${esc(m.text)}</span>${n?`<em class=bg>${fm(n)}</em>`:''}</div></div></div>`}).join('')||`<p class=em>${t('em')}</p>`;bd()}
-function chat(){if(!cur)return;const k=cid(me.$id,cur),u=us[cur]||{name:'…'},a=[...all.values()].filter(m=>m.chat==k).sort((x,y)=>x.$createdAt.localeCompare(y.$createdAt));
-$('#cn').textContent=u.name;$('#ca').innerHTML=av(u.name,cur);
-const li=a.filter(m=>m.sender!=me.$id).pop();if(li){sn[k]=li.$createdAt;L.sn=JSON.stringify(sn)}
-let h='',pd='';a.forEach((m,i)=>{const d=new Date(m.$createdAt).toDateString(),n=a[i+1],o=m.sender==me.$id;
-if(d!=pd){h+=`<div class=dt>${new Date(m.$createdAt).toLocaleDateString(lang,{month:'long',day:'numeric',year:'numeric'})}</div>`;pd=d}
-const tl=!n||n.sender!=m.sender||new Date(n.$createdAt).toDateString()!=d;
-h+=`<div class="m${o?' o':''}${tl?' t':''}"><span class=x>${esc(m.text)}</span><i>${tm(m.$createdAt)}${o?(m.fail?' !':m.$id[0]=='t'?' ◷':' ✓'):''}</i></div>`});
-$('#mi').innerHTML=h;bd()}
-async function open(id){cur=id;usr(id);chat();pg('chat');try{const r=await DB.listDocuments(D,M,[Q.equal('chat',[cid(me.$id,id)]),Q.orderDesc('$createdAt'),Q.limit(100)]);r.documents.forEach(d=>all.set(d.$id,d));chat()}catch{}}
-function back(){$('#in').blur();pg('chat',0);cur=null;list()}
-function ur(q,g){q=q.toLowerCase();let h='',p='';Object.values(us).filter(u=>u.$id&&u.$id!=me.$id&&((u.name||'')+(u.username||'')).toLowerCase().includes(q)).sort((x,y)=>x.name.localeCompare(y.name)).forEach(u=>{const z=/[a-z]/i.test(u.name[0])?u.name[0].toUpperCase():'#';if(g&&z!=p){h+=`<div class=lt>${z}</div>`;p=z}h+=`<div class="r c" data-id="${u.$id}">${av(u.name,u.$id)}<div class=b><b>${esc(u.name)}</b><span class=s2>${esc(!g&&u.username?'@'+u.username:t('ls'))}</span></div></div>`});return h}
-async function nc(){pg('newc');await lu();ncr()}
-function ncr(){$('#ul').innerHTML=ur($('#q').value.trim(),1);$('#ix').innerHTML=[...$('#ul').querySelectorAll('.lt')].map(e=>`<i>${e.textContent}</i>`).join('')}
-function sx(on){$('#list').classList.toggle('sx',on);if(on)lu().then(sr);else{$('#sq').value='';$('#sq').blur()}}
-function sr(){$('#sres').innerHTML=ur($('#sq').value.trim(),0)}
-$('#sq').onfocus=()=>sx(1);
-const op=e=>{const r=e.target.closest('.r[data-id]');r&&open(r.dataset.id)};
-$('#rows').onclick=op;$('#sres').onclick=e=>{op(e);setTimeout(()=>sx(0),250)};$('#ct').onclick=e=>{op(e);setTimeout(()=>pg('newc',0),250)};
-$('#ms').onscroll=e=>$('#dn').classList.toggle('on',e.target.scrollTop<-300);
-async function send(){const x=$('#in').value.trim();if(!x)return;$('#in').value='';fit();
-const d={sender:me.$id,peer:cur,chat:cid(me.$id,cur),text:x},f={...d,$id:'t'+Date.now(),$createdAt:new Date().toISOString()};all.set(f.$id,f);chat();list();
-try{const r=await DB.createDocument(D,M,ID.unique(),d,[P.read(R.user(me.$id)),P.read(R.user(cur)),P.update(R.user(me.$id)),P.delete(R.user(me.$id))]);all.delete(f.$id);all.set(r.$id,r)}catch{f.fail=1}chat();list()}
-function fit(){const a=$('#in');a.style.height='auto';a.style.height=Math.min(a.scrollHeight,120)+'px';$('#sd').classList.toggle('go',!!a.value.trim())}
-$('#in').oninput=fit;
-const vv=visualViewport,kb=h=>H.style.setProperty('--kb',h+'px');
-$('#in').onfocus=()=>kb(+L.kb||innerHeight*.35);$('#in').onblur=()=>kb(0);
-vv.onresize=vv.onscroll=()=>{$('#app').style.transform=`translateY(${vv.offsetTop}px)`;const h=innerHeight-vv.height-vv.offsetTop;if(document.activeElement==$('#in')&&h>120){L.kb=h|0;kb(h)}};
-async function enter(a){const id=a.$id;try{me=await DB.getDocument(D,U,id)}catch{me=await DB.createDocument(D,U,id,{name:a.name||(a.email?a.email.split('@')[0]:'Guest '+id.slice(-4)),username:a.email?a.email.split('@')[0]:''},[P.read(R.users()),P.update(R.user(id)),P.delete(R.user(id))])}
-us[id]=me;$('#sa').innerHTML=av(me.name,id);pg('list');pg('auth',0);
-try{(await DB.listDocuments(D,M,[Q.orderDesc('$createdAt'),Q.limit(100)])).documents.forEach(d=>all.set(d.$id,d))}catch{}
-list();c.subscribe(`databases.${D}.collections.${M}.documents`,r=>{if(r.events.some(e=>/\.create$/.test(e))){all.set(r.payload.$id,r.payload);list();chat()}})}
-async function go(g){$('#er').textContent='';try{
-if(g)await A.createAnonymousSession();
-else{let u=$("#un").value.trim().toLowerCase();const p=$("#pw").value;if(!u.includes('@'))u+='@m.app';
-try{await A.createEmailPasswordSession(u,p)}catch(e){if(e.code!=401)throw e;await A.create(ID.unique(),u,p,u.split('@')[0]);await A.createEmailPasswordSession(u,p)}}
-enter(await A.get())}catch(e){$('#er').textContent=e.message}}
-i18n();A.get().then(enter,()=>{});
+/* ===== [CONFIG] تنظیمات سرور | Server config ===== */
+const EP='https://fra.cloud.appwrite.io/v1',PJ='6aecbdce0036439c36ca',DB='tg';
+const {Client,Account,Databases,ID,Query}=Appwrite;
+const cl=new Client().setEndpoint(EP).setProject(PJ),acc=new Account(cl),db=new Databases(cl);
+const $=s=>document.querySelector(s),ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
+const S={me:0,pf:{},ch:[],ms:[],cur:0,tab:'chats',rp:0,un:{},q:''};
+let L=ls('lang')||'fa',FPS=+ls('fps')||60;
+
+/* ===== [I18N] زبان‌ها | Languages (layout always LTR) ===== */
+const T={fa:{chats:'گفتگوها',contacts:'مخاطبین',settings:'تنظیمات',msg:'پیام',login:'ورود / ثبت‌نام',id:'ایمیل یا نام کاربری',pw:'رمز عبور (حداقل ۸ حرف)',guest:'ورود مهمان',out:'خروج از حساب',name:'نام',un:'نام کاربری',ap:'ظاهر برنامه',lang:'زبان',fps:'نرخ فریم',on:'آنلاین',seen:'آخرین بازدید',min:'دقیقه پیش',hr:'ساعت پیش',yd:'بازدید دیروز',lg:'آخرین بازدید خیلی وقت پیش',no:'گفتگویی نیست',se:'جستجو',wp:'رمز عبور اشتباه است',mem:'عضو'},
+en:{chats:'Chats',contacts:'Contacts',settings:'Settings',msg:'Message',login:'Log in / Sign up',id:'Email or username',pw:'Password (min 8)',guest:'Continue as guest',out:'Log out',name:'Name',un:'Username',ap:'Appearance',lang:'Language',fps:'Frame rate',on:'online',seen:'last seen',min:'min ago',hr:'h ago',yd:'last seen yesterday',lg:'last seen long ago',no:'No chats yet',se:'Search',wp:'Wrong password',mem:'members'}};
+const t=k=>T[L][k];
+
+/* ===== [FPS] نرخ فریم ۳۰/۶۰ | 30/60 fps (30 = stepped animations, lighter) ===== */
+const fx=()=>document.documentElement.style.setProperty('--e',FPS==30?'steps(7,end)':'cubic-bezier(.2,.8,.2,1)');
+
+/* ===== [UTIL] ابزارها | Helpers ===== */
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const col=s=>{let h=0;for(const c of s)h=h*31+c.charCodeAt(0)|0;return`hsl(${Math.abs(h)%360} 50% 45%)`};
+const av=(n,z='')=>`<i class="av ${z}" style="background:${col(n)}">${esc([...n][0]||'?')}</i>`;
+const lc=()=>L=='fa'?'fa-IR':'en-GB',nm=n=>n.toLocaleString(lc());
+const tm=ms=>new Date(ms).toLocaleTimeString(lc(),{hour:'2-digit',minute:'2-digit',hour12:false});
+/* [PRESENCE] آنلاین/آخرین بازدید | online & last seen */
+function sn(ms){if(!ms)return t('lg');const d=Date.now()-ms;if(d<45e3)return t('on');const m=Math.max(1,Math.round(d/6e4));if(m<60)return`${t('seen')} ${nm(m)} ${t('min')}`;const h=Math.floor(m/60);if(h<24)return`${t('seen')} ${nm(h)} ${t('hr')}`;const x=new Date(ms);return x.toDateString()==new Date(Date.now()-864e5).toDateString()?t('yd'):`${t('seen')} ${x.toLocaleDateString(lc())}`}
+const pr=u=>S.pf[u]||{name:'?',username:'',seen:0};
+const peer=c=>c.members.find(x=>x!=S.me.$id)||S.me.$id;
+const nmOf=c=>c.type=='dm'?pr(peer(c)).name:c.title;
+
+/* ===== [AUTH] ورود / مهمان / خروج | Login, guest, logout ===== */
+function authUI(){$('#au').innerHTML=`<div class="ctr"><h2 style="text-align:center">Link</h2><input id="ai" placeholder="${t('id')}" autocapitalize="off"><input id="ap" type="password" placeholder="${t('pw')}"><button class="bt" onclick="go()">${t('login')}</button><button class="bt g" onclick="gs()">${t('guest')}</button><p id="er"></p></div>`;$('#au').classList.add('on')}
+async function go(){const id=$('#ai').value.trim(),pw=$('#ap').value;if(!id||!pw)return;const em=id.includes('@')?id:id+'@link.app';
+try{try{await acc.createEmailPasswordSession(em,pw)}catch(e){if(e.code!=401)throw e;try{await acc.create(ID.unique(),em,pw,id.split('@')[0])}catch(x){throw x.code==409?Error(t('wp')):x}await acc.createEmailPasswordSession(em,pw)}await start()}catch(e){$('#er').textContent=e.message}}
+async function gs(){try{await acc.createAnonymousSession();await start()}catch(e){$('#er').textContent=e.message}}
+async function lo(){try{await acc.deleteSession('current')}catch(e){}location.reload()}
+
+/* ===== [DATA] بارگذاری داده | Load profile, chats, contacts ===== */
+async function start(){S.me=await acc.get();let p;
+try{p=await db.getDocument(DB,'profiles',S.me.$id)}catch(e){
+const base=S.me.email?S.me.email.split('@')[0].replace(/\W/g,'').slice(0,20):'guest'+Math.random().toString(36).slice(2,6);
+const mk=u=>db.createDocument(DB,'profiles',S.me.$id,{name:S.me.name||base,username:u,seen:Date.now()});
+try{p=await mk(base)}catch(x){p=await mk(base+Math.random().toString(36).slice(2,6))}}
+S.pf[p.$id]=p;$('#au').classList.remove('on');
+const [a,b]=await Promise.all([db.listDocuments(DB,'chats',[Query.contains('members',S.me.$id),Query.limit(100)]),db.listDocuments(DB,'profiles',[Query.limit(100)])]);
+S.ch=a.documents;b.documents.forEach(x=>S.pf[x.$id]=x);R();rt();ping()}
+const ping=()=>S.me&&!document.hidden&&db.updateDocument(DB,'profiles',S.me.$id,{seen:Date.now()}).catch(()=>{});
+setInterval(ping,25e3);document.addEventListener('visibilitychange',ping);
+
+/* ===== [REALTIME] دریافت زنده | Live receive ===== */
+function rt(){cl.subscribe([`databases.${DB}.collections.messages.documents`,`databases.${DB}.collections.chats.documents`,`databases.${DB}.collections.profiles.documents`],r=>{
+const d=r.payload,e=r.events[0]||'';
+if(e.includes('.profiles.')){S.pf[d.$id]=d;RL();return}
+if(e.includes('.chats.')){if(!d.members.includes(S.me.$id))return;const i=S.ch.findIndex(c=>c.$id==d.$id);i<0?S.ch.push(d):S.ch[i]=d;if(S.cur&&S.cur.$id==d.$id)S.cur=d;RL();return}
+if(!S.ch.some(c=>c.$id==d.chat)||S.ms.some(x=>x.$id==d.$id))return;
+if(S.cur&&S.cur.$id==d.chat){S.ms.push(d);drawMs()}else if(d.uid!=S.me.$id){S.un[d.chat]=(S.un[d.chat]||0)+1;RL()}})}
+
+/* ===== [UI-MAIN] صفحه اصلی و تب‌ها | Main screen & tab bar ===== */
+const IC={contacts:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6z"/></svg>',chats:'<svg viewBox="0 0 24 24"><path d="M4 4h16v13H9l-5 4z"/></svg>',settings:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>'};
+const hd=(a,b,c)=>`<div class="hd"><i style="width:44px"></i><b>${a}</b>${b?`<button class="ci" onclick="${c}">${b}</button>`:'<i style="width:44px"></i>'}</div>`;
+const tab=k=>{S.tab=k;S.q='';R()};
+function R(){const k=S.tab;
+$('#v').innerHTML=k=='settings'?hd(t('settings'))+rS():hd(t(k),k=='chats'?'✎':'',"tab('contacts')")+`<div class="sr"><input id="qi" placeholder="${t('se')}" oninput="S.q=this.value;RL()"></div><div id="ls"></div>`;
+RL();
+$('#tb').innerHTML=`<nav>${['contacts','chats','settings'].map(x=>`<button class="t ${x==k?'on':''}" onclick="tab('${x}')">${IC[x]}${t(x)}</button>`).join('')}</nav><button class="ci" onclick="tab('chats');$('#qi').focus()">⌕</button>`}
+
+/* [UI-LIST] لیست گفتگوها و مخاطبین | Chat & contact lists */
+const rowC=c=>{const n=nmOf(c),u=S.un[c.$id];return`<div class="row" onclick="openC('${c.$id}')">${av(n)}<div class="mid"><b>${esc(n)}</b><span dir="auto">${esc(c.last||'')}</span></div><div class="rt">${c.ts?tm(c.ts):''}${u?`<br><i class="bd">${nm(u)}</i>`:''}</div></div>`};
+const rowU=p=>`<div class="row" onclick="dm('${p.$id}')">${av(p.name)}<div class="mid"><b>${esc(p.name)}</b><span>${sn(p.seen)}</span></div></div>`;
+function RL(){const l=$('#ls');if(!l)return;const q=S.q.toLowerCase();
+l.innerHTML=S.tab=='chats'?(S.ch.filter(c=>nmOf(c).toLowerCase().includes(q)).sort((a,b)=>b.ts-a.ts).map(rowC).join('')||`<p class="em">${t('no')}</p>`):Object.values(S.pf).filter(p=>p.$id!=S.me.$id&&(p.name+p.username).toLowerCase().includes(q)).map(rowU).join('')}
+
+/* ===== [UI-SETTINGS] تنظیمات: نام، نام کاربری، ظاهر، خروج | Settings ===== */
+const seg=(k,a,v)=>`<span class="sg">${a.map(x=>`<button class="${x==v?'on':''}" onclick="st('${k}','${x}')">${x=='fa'?'فارسی':x=='en'?'English':x}</button>`).join('')}</span>`;
+const rS=()=>{const p=pr(S.me.$id);return`<div style="text-align:center;padding:20px 0">${av(p.name,'xl')}<h2 style="margin:8px 0">${esc(p.name)}</h2><p style="color:var(--sub)">@${esc(p.username)}</p></div>
+<div class="cd"><div class="row" onclick="ed('name')"><b>${t('name')}</b><span class="rt">${esc(p.name)}</span></div><div class="row" onclick="ed('username')"><b>${t('un')}</b><span class="rt">@${esc(p.username)}</span></div></div>
+<div class="cd"><div class="row"><b>${t('fps')}</b>${seg('fps',[30,60],FPS)}</div><div class="row"><b>${t('lang')}</b>${seg('lang',['fa','en'],L)}</div></div>
+<div class="cd"><div class="row" onclick="lo()" style="color:#ff453a"><b>${t('out')}</b></div></div>`};
+function st(k,v){if(k=='fps'){FPS=+v;ls('fps',v);fx()}else{L=v;ls('lang',v)}R()}
+async function ed(f){const v=prompt(t(f=='name'?'name':'un'),pr(S.me.$id)[f]);if(!v)return;let x=v.trim();if(f=='username')x=x.replace(/\W/g,'');if(!x)return;
+try{S.pf[S.me.$id]=await db.updateDocument(DB,'profiles',S.me.$id,{[f]:x});if(f=='name')acc.updateName(x)}catch(e){alert(e.message)}R()}
+
+/* ===== [UI-CHAT] صفحه گفتگو: ارسال، ریپلای | Chat page: send, reply ===== */
+async function dm(u){let c=S.ch.find(c=>c.type=='dm'&&c.members.includes(u));
+if(!c){c=await db.createDocument(DB,'chats',ID.unique(),{type:'dm',title:'',members:[S.me.$id,u],owner:S.me.$id,last:'',ts:Date.now()});S.ch.push(c)}
+tab('chats');openC(c.$id)}
+async function openC(id){S.cur=S.ch.find(c=>c.$id==id);S.rp=0;S.un[id]=0;S.ms=[];drawChat();$('#ch').classList.add('on');
+const r=await db.listDocuments(DB,'messages',[Query.equal('chat',id),Query.orderDesc('ts'),Query.limit(60)]);S.ms=r.documents.reverse();drawMs()}
+function drawChat(){const c=S.cur,n=nmOf(c),s=c.type=='dm'?sn(pr(peer(c)).seen):`${nm(c.members.length)} ${t('mem')}`;
+$('#ch').innerHTML=`<div class="hd" style="padding:calc(env(safe-area-inset-top) + 8px) 12px 4px;height:auto"><button class="ci" onclick="back()">‹</button><div class="pill"><b>${esc(n)}</b><small style="color:var(--sub)">${s}</small></div>${av(n,'sm')}</div><div id="ms"></div><div id="rb"></div><div id="cp"><input id="in" dir="auto" placeholder="${t('msg')}" onkeydown="event.key=='Enter'&&send()"><button class="ci" style="background:var(--ac)" onclick="send()">➤</button></div>`}
+const bub=m=>{const o=m.uid==S.me.$id,r=m.reply&&S.ms.find(x=>x.$id==m.reply);return`<div class="b ${o?'o':'i'}" onclick="rp('${m.$id}')">${r?`<q dir="auto">${esc(r.text)}</q>`:''}<p dir="auto">${esc(m.text)}</p><s>${tm(m.ts)}${o?' ✓':''}</s></div>`};
+function drawMs(){const m=$('#ms');if(!m)return;m.innerHTML=S.ms.map(bub).join('');m.scrollTop=m.scrollHeight}
+function rp(id){if(!id){S.rp=0;$('#rb').innerHTML='';return}S.rp=id;const m=S.ms.find(x=>x.$id==id);$('#rb').innerHTML=`<div class="rbar" dir="auto" onclick="rp(0)">↩ ${esc((m.text||'').slice(0,60))} ✕</div>`;$('#in').focus()}
+async function send(){const i=$('#in'),v=i.value.trim();if(!v)return;i.value='';
+const id=ID.unique(),m={chat:S.cur.$id,uid:S.me.$id,text:v,kind:'text',reply:S.rp||'',ts:Date.now()};
+S.ms.push({...m,$id:id});S.cur.last=v.slice(0,80);S.cur.ts=m.ts;rp(0);drawMs();
+try{await db.createDocument(DB,'messages',id,m);await db.updateDocument(DB,'chats',m.chat,{last:S.cur.last,ts:m.ts})}catch(e){alert(e.message)}}
+function back(){$('#ch').classList.remove('on');S.cur=0;R()}
+
+/* ===== [BOOT] شروع | Start ===== */
+fx();(async()=>{let ok=1;try{await acc.get()}catch(e){ok=0}
+ok?start().catch(e=>{authUI();$('#er').textContent=e.message}):authUI()})();
 </script></body></html>
