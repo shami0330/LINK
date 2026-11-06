@@ -273,7 +273,7 @@ async function send(){
   inp.value='';upd();sendDraft('',peer.id);
   try{
     const d=await db.createDocument(DB,'messages',ID.unique(),{chat:key,from:me.id,to:peer.id,text:t},
-      [Permission.read(Role.user(me.id)),Permission.read(Role.user(peer.id))]);
+      [Permission.read(Role.users())]);
     addMsg(d);
   }catch(e){err(e)}
 }
