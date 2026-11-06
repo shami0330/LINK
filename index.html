@@ -73,8 +73,8 @@ input.name:focus{border-color:var(--ac);box-shadow:0 0 0 6px rgba(51,144,236,.15
 #liveRow .bb.bump{animation:bump .3s cubic-bezier(.2,1.8,.4,1)}
 @keyframes livein{from{opacity:0;transform:translateY(34px) scale(.4);filter:blur(8px)}}
 @keyframes bump{0%{transform:scale(.96)}60%{transform:scale(1.03)}}
-.n{animation:glow .7s ease-out both}
-@keyframes glow{from{color:var(--ac2);text-shadow:0 0 12px var(--ac2)}to{color:inherit;text-shadow:0 0 0 transparent}}
+.n{animation:glow 1s cubic-bezier(.25,.6,.3,1) both}
+@keyframes glow{from{opacity:0;color:transparent;text-shadow:0 0 14px var(--ac2)}60%{opacity:.8;color:transparent;text-shadow:0 0 7px var(--ac2)}to{opacity:1;color:inherit;text-shadow:0 0 0 transparent}}
 .cur{display:inline-block;width:2px;height:1em;background:var(--ac2);margin:0 2px;vertical-align:text-bottom;animation:bl 1s infinite}
 @keyframes bl{50%{opacity:0}}
 .bar{display:flex;align-items:flex-end;gap:8px;padding:8px 10px max(8px,env(safe-area-inset-bottom));background:rgba(255,255,255,.9)}
